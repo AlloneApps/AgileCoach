@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "472204812163",
+    "project_id": "agile-coach-f7f01",
+    "storage_bucket": "agile-coach-f7f01.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472204812163:android:252100df1329e35a79a0b6",
+        "android_client_info": {
+          "package_name": "com.task.agilecoach"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "472204812163-gulmhqr8o3g4dsmd6d8q0mretdl23bvn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD04GSMHLB2bHLiDGM2XkwjQSgdMeSYDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "472204812163-gulmhqr8o3g4dsmd6d8q0mretdl23bvn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
