@@ -29,6 +29,9 @@ import com.task.agilecoach.helpers.dataUtils.DataUtils;
 import com.task.agilecoach.helpers.myTaskToast.MyTasksToast;
 import com.task.agilecoach.model.TaskMaster;
 import com.task.agilecoach.model.User;
+import com.task.agilecoach.views.main.MainActivity;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +40,6 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
 
     private static final String TAG = "CreateTasks";
     private View rootView;
-    private TextView textTitle;
 
     private ProgressDialog progressDialog;
 
@@ -76,15 +78,10 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
     @Override
     public void onActivityCreated(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         try {
+            ((MainActivity) requireActivity()).setTitle("My Tasks");
             progressDialog = new ProgressDialog(requireContext());
 
-            textTitle = requireActivity().findViewById(R.id.title_header);
-            if (textTitle != null) {
-                textTitle.setVisibility(View.VISIBLE);
-                textTitle.setText("My Tasks");
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -183,13 +180,6 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
     @Override
     public void onDestroy() {
         super.onDestroy();
-        try {
-            if (textTitle != null) {
-                textTitle.setText("");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void showAlertForUpdateBankDetails(Context context, TaskMaster taskMaster) {

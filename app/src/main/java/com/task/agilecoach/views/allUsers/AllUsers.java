@@ -1,18 +1,15 @@
-package com.task.agilecoach.views.allTasks;
+package com.task.agilecoach.views.allUsers;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,32 +22,31 @@ import com.google.firebase.database.ValueEventListener;
 import com.task.agilecoach.R;
 import com.task.agilecoach.helpers.AppConstants;
 import com.task.agilecoach.helpers.FireBaseDatabaseConstants;
-import com.task.agilecoach.helpers.myTaskToast.MyTasksToast;
-import com.task.agilecoach.model.TaskMaster;
+import com.task.agilecoach.model.User;
 import com.task.agilecoach.views.main.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemClickListener {
+public class AllUsers extends Fragment implements AllUsersAdapter.AllUsersItemClickListener {
 
     private static final String TAG = "AllTasks";
     private View rootView;
     private ProgressDialog progressDialog;
-    private RecyclerView taskRecyclerView;
+    private RecyclerView userRecyclerView;
     private RelativeLayout recyclerLayout;
 
-    List<TaskMaster> allTasksList = new ArrayList<>();
+    List<User> allUsersList = new ArrayList<>();
 
-    private TextView textNoTasks;
-    private AllTasksAdapter allTasksAdapter;
+    private TextView textNoUsers;
+    private AllUsersAdapter allUsersAdapter;
 
-    public AllTasks() {
+    public AllUsers() {
         // Required empty public constructor
     }
 
-    public static AllTasks createInstance(Bundle bundle) {
-        AllTasks fragment = new AllTasks();
+    public static AllUsers createInstance(Bundle bundle) {
+        AllUsers fragment = new AllUsers();
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -64,7 +60,7 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_my_tasks, container, false);
+        rootView = inflater.inflate(R.layout.fragment_all_users, container, false);
         return rootView;
     }
 
@@ -72,51 +68,54 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
     public void onActivityCreated(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         try {
-            ((MainActivity) requireActivity()).setTitle("All Tasks");
+            ((MainActivity) requireActivity()).setTitle("All Users");
 
             progressDialog = new ProgressDialog(requireContext());
 
-            loadAllTaskList();
-        }catch (Exception e){
+            loadAllUsersList();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void setUpViews() {
         recyclerLayout = rootView.findViewById(R.id.recycler_layout);
-        textNoTasks = rootView.findViewById(R.id.text_no_tasks);
-        taskRecyclerView = rootView.findViewById(R.id.recycler_my_tasks);
-        if (allTasksList.size() > 0) {
-            textNoTasks.setVisibility(View.GONE);
+        textNoUsers = rootView.findViewById(R.id.text_no_users);
+        userRecyclerView = rootView.findViewById(R.id.recycler_users);
+        if (allUsersList.size() > 0) {
+            textNoUsers.setVisibility(View.GONE);
             recyclerLayout.setVisibility(View.VISIBLE);
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
-            taskRecyclerView.setLayoutManager(linearLayoutManager);
-            allTasksAdapter = new AllTasksAdapter(requireContext(), allTasksList, this);
-            taskRecyclerView.setAdapter(allTasksAdapter);
-            allTasksAdapter.notifyDataSetChanged();
+            userRecyclerView.setLayoutManager(linearLayoutManager);
+            allUsersAdapter = new AllUsersAdapter(requireContext(), allUsersList, this);
+            userRecyclerView.setAdapter(allUsersAdapter);
+            allUsersAdapter.notifyDataSetChanged();
         } else {
             recyclerLayout.setVisibility(View.GONE);
-            textNoTasks.setVisibility(View.VISIBLE);
+            textNoUsers.setVisibility(View.VISIBLE);
         }
     }
 
-    public void loadAllTaskList() {
+    public void loadAllUsersList() {
         try {
-            showProgressDialog("Loading task details, please wait.");
+            showProgressDialog("Loading user details, please wait.");
 
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.TASK_LIST_TABLE);
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
-                    allTasksList.clear();
+                    allUsersList.clear();
                     for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                        TaskMaster taskMaster = postSnapshot.getValue(TaskMaster.class);
-                        if (taskMaster != null) {
-                            allTasksList.add(taskMaster);
+                        User userMain = postSnapshot.getValue(User.class);
+                        Log.d(TAG, "onDataChange: userMain: " + userMain);
+                        if (userMain != null) {
+                            if (!(userMain.getRole().equalsIgnoreCase(AppConstants.ADMIN_ROLE))) {
+                                allUsersList.add(userMain);
+                            }
                         }
                     }
-                    Log.d(TAG, "onDataChange: taskMasterList:" + allTasksList);
+                    Log.d(TAG, "onDataChange: allUsersList:" + allUsersList);
 
                     hideProgressDialog();
 
@@ -140,21 +139,11 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
     }
 
     @Override
-    public void assignTask(int position, TaskMaster taskMaster) {
-        MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-    }
-
-    @Override
-    public void changeStatus(int position, TaskMaster taskMaster) {
-        showDialogForTaskStatusUpdateAdmin(requireContext(), position, taskMaster);
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
     }
 
-    public void showDialogForTaskStatusUpdateAdmin(Context context, int position, TaskMaster taskMaster) {
+   /* public void showDialogForTaskStatusUpdateAdmin(Context context, int position, User taskMaster) {
         try {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             LayoutInflater inflater = this.getLayoutInflater();
@@ -173,7 +162,7 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
             Button btnClose = dialogView.findViewById(R.id.btn_close);
 
 
-            String headerMessage = taskMaster.getTaskType() + " : " + taskMaster.getTaskMasterId();
+            String headerMessage = taskMaster.getTaskType() + " : " + taskMaster.getUserId();
             textMainHeader.setText(headerMessage);
 
             if (taskMaster.getTaskType().equals(AppConstants.BUG_TYPE)) {
@@ -231,7 +220,7 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     private void showProgressDialog(String message) {
         try {
@@ -254,5 +243,15 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void userDetails(int position, User userDetails) {
+
+    }
+
+    @Override
+    public void makeInActiveUser(int position, User userDetails) {
+
     }
 }

@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.task.agilecoach.R;
+import com.task.agilecoach.views.main.MainActivity;
 import com.task.agilecoach.views.main.MyVectorClock;
 
 import java.util.Calendar;
@@ -57,6 +58,8 @@ public class AdminDashboard extends Fragment {
     @Override
     public void onActivityCreated(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        ((MainActivity) requireActivity()).setTitle("Dashboard");
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, 0);

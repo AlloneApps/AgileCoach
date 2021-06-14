@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/create_task_coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginStart="@dimen/std_10_dp"
+    android:layout_marginTop="@dimen/std_10_dp"
+    android:layout_marginEnd="@dimen/std_10_dp"
+    android:layout_marginBottom="@dimen/std_10_dp"
+    android:background="@color/colorWhite"
+    android:elevation="@dimen/std_6_dp"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/std_10_dp"
+    app:cardCornerRadius="@dimen/std_6_dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/std_10_dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/std_50_dp"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/image_user"
+                android:layout_width="@dimen/std_50_dp"
+                android:layout_height="@dimen/std_50_dp"
+                android:contentDescription="Person icon"
+                android:src="@drawable/ic_person_latest_gray_border"
+                app:civ_border_color="@color/colorBorder"
+                app:civ_border_width="2dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/std_10_dp"
+                android:layout_marginEnd="@dimen/std_6_dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorVeniceBlue"
+                    android:drawablePadding="@dimen/std_10_dp"
+                    android:paddingStart="@dimen/std_10_dp"
+                    android:textSize="@dimen/std_16_sp" />
+
+                <LinearLayout
+                    android:id="@+id/task_mobile_no_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/text_mobile_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.9"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/std_16_sp"
+                        android:paddingStart="@dimen/std_10_dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/text_active"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.1"
+                        android:drawableLeft="@drawable/ic_active_user"
+                        android:drawablePadding="@dimen/std_10_dp"
+                        android:paddingStart="@dimen/std_10_dp"
+                        android:textColor="@color/colorVeniceBlue"
+                        android:textSize="@dimen/std_16_sp"
+                        android:gravity="start|center"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/std_10_dp"
+            android:background="@color/colorBorder" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/std_10_dp"
+            android:layout_marginBottom="@dimen/std_10_dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_in_active_user"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="InActive"
+                android:textSize="@dimen/std_16_sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_user_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Details"
+                android:textSize="@dimen/std_16_sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+

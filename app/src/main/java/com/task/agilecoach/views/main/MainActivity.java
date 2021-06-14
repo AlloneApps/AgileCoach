@@ -31,6 +31,7 @@ import com.task.agilecoach.helpers.Utils;
 import com.task.agilecoach.helpers.myTaskToast.MyTasksToast;
 import com.task.agilecoach.model.User;
 import com.task.agilecoach.views.allTasks.AllTasks;
+import com.task.agilecoach.views.allUsers.AllUsers;
 import com.task.agilecoach.views.createTasks.CreateTasks;
 import com.task.agilecoach.views.dashboard.AdminDashboard;
 import com.task.agilecoach.views.dashboard.UserDashboard;
@@ -44,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "MainActivity";
 
     private ImageView menuIcon;
-    private TextView textTitle, navUserName, navUserId;
+    private TextView navUserName, navUserId;
+    private TextView textTitle;
     private View navHeader;
     private FragmentManager fragmentManager;
 
@@ -62,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             TextView title = appBarLayout.findViewById(R.id.title);
             textTitle = findViewById(R.id.title_header);
-
+            textTitle.setVisibility(View.VISIBLE);
+            
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
                 @Override
@@ -154,6 +157,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    public void setTitle(String titleName){
+        try {
+            Log.d(TAG, "setTitle: titleName: "+titleName);
+            if (textTitle != null) {
+                textTitle.setVisibility(View.VISIBLE);
+                Log.d(TAG, "setTitle: title setted");
+                textTitle.setText(titleName);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public void logout() {
         try {
             Utils.removeAllDataWhenLogout(MainActivity.this);
@@ -192,6 +208,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new AllTasks(), Integer.toString(getFragmentCount())).commit();
             } else if (id == R.id.nav_my_tasks) {
                 fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new MyTasks(), Integer.toString(getFragmentCount())).commit();
+            } else if (id == R.id.nav_all_users) {
+                fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new AllUsers(), Integer.toString(getFragmentCount())).commit();
             }
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
@@ -221,6 +239,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new AdminDashboard(),
                         Integer.toString(getFragmentCount())).commit();
             } else if (fragment instanceof AllTasks) {
+                fragmentManager.popBackStack();
+                fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new AdminDashboard(),
+                        Integer.toString(getFragmentCount())).commit();
+            } else if (fragment instanceof AllUsers) {
                 fragmentManager.popBackStack();
                 fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new AdminDashboard(),
                         Integer.toString(getFragmentCount())).commit();

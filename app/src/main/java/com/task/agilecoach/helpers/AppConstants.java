@@ -37,4 +37,8 @@ public class AppConstants {
     public static final String MALE_GENDER = "Male";
     public static final String FEMALE_GENDER = "Female";
     public static final String OTHER_GENDER = "Other";
+
+    // User Active Status
+    public static final String ACTIVE_USER = "Active";
+    public static final String IN_ACTIVE_USER = "InActive";
 }

@@ -36,6 +36,7 @@ import com.task.agilecoach.model.TaskMaster;
 import com.task.agilecoach.model.TasksSubDetails;
 import com.task.agilecoach.model.User;
 import com.task.agilecoach.views.dashboard.AdminDashboard;
+import com.task.agilecoach.views.main.MainActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +46,6 @@ public class CreateTasks extends Fragment {
 
     private static final String TAG = "CreateTasks";
     private View rootView;
-    private TextView textTitle;
     private ProgressDialog progressDialog;
 
     private EditText editTaskHeader, editTaskDescription, editTaskEstimation;
@@ -85,23 +85,15 @@ public class CreateTasks extends Fragment {
     public void onActivityCreated(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         try {
+            ((MainActivity) requireActivity()).setTitle("Create Tasks");
             progressDialog = new ProgressDialog(requireContext());
-            textTitle = requireActivity().findViewById(R.id.title_header);
-            if (textTitle != null) {
-                textTitle.setVisibility(View.VISIBLE);
-                textTitle.setText("Create Tasks");
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         loadAllUsers();
 
-//        loadUserDetails();
-
         loadTaskTypes();
-
-//        setUpViews();
     }
 
     private void setUpViews() {
@@ -357,13 +349,6 @@ public class CreateTasks extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        try {
-            if (textTitle != null) {
-                textTitle.setText("");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void showProgressDialog(String message) {

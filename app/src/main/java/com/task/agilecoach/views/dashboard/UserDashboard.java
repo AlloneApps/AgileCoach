@@ -16,6 +16,7 @@ import com.task.agilecoach.helpers.Utils;
 import com.task.agilecoach.helpers.dataUtils.DataUtils;
 import com.task.agilecoach.model.TaskMaster;
 import com.task.agilecoach.model.User;
+import com.task.agilecoach.views.main.MainActivity;
 import com.task.agilecoach.views.main.MyVectorClock;
 
 import java.util.Calendar;
@@ -54,6 +55,8 @@ public class UserDashboard extends Fragment {
     @Override
     public void onActivityCreated(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        ((MainActivity) requireActivity()).setTitle("Dashboard");
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, 0);

@@ -1,6 +1,7 @@
 package com.task.agilecoach.views.main;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.task.agilecoach.helpers.customFont.FontConstants;
 import com.task.agilecoach.helpers.customFont.FontsOverride;
@@ -8,9 +9,14 @@ import com.task.agilecoach.helpers.dataUtils.DataUtils;
 
 public class AgileCoachApplication extends Application {
 
+    private static Context mainContext;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        mainContext = AgileCoachApplication.this;
+
         FontsOverride.setDefaultFont(this, FontConstants.DEFAULT, "fonts/Roboto-Medium.ttf");
         FontsOverride.setDefaultFont(this, FontConstants.DEFAULT_BOLD, "fonts/Roboto-Bold.ttf");
         FontsOverride.setDefaultFont(this, FontConstants.MONOSPACE, "fonts/Roboto-Regular.ttf");
@@ -18,5 +24,9 @@ public class AgileCoachApplication extends Application {
         FontsOverride.setDefaultFont(this, FontConstants.SANS_SERIF, "fonts/Roboto-Thin.ttf");
 
         DataUtils.loadDefaultTaskStatus(AgileCoachApplication.this);
+    }
+
+    public static Context getApplicationContextMain() {
+        return mainContext;
     }
 }

@@ -12,6 +12,11 @@
         <item
             android:id="@+id/nav_all_tasks"
             android:icon="@drawable/ic_task_calender"
-            android:title="All Tasks" />
+            android:title="Tasks" />
+
+        <item
+            android:id="@+id/nav_all_users"
+            android:icon="@drawable/ic_group"
+            android:title="Users" />
     </group>
 </menu>
