@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/driver_signup_coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:backgroundTint="@color/colorAccent"
+        android:elevation="5dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="SignUp"
+            android:textColor="@color/colorNewUxBlue"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <ScrollView
+        android:id="@+id/driver_signup_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:fillViewport="false"
+        android:scrollbarStyle="insideOverlay">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/relative_horizontal_padding"
+            android:paddingLeft="@dimen/relative_horizontal_padding"
+            android:paddingEnd="@dimen/relative_horizontal_padding"
+            android:paddingRight="@dimen/relative_horizontal_padding"
+            android:paddingBottom="@dimen/relative_vertical_padding">
+
+            <TextView
+                android:id="@+id/text_email_password"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Login Info" />
+
+            <TextView
+                android:id="@+id/text_mobile_number_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_email_password"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="Mobile Number"
+                android:textColor="@color/colorSecondaryText"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edit_mobile_phone"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_mobile_number_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:background="@drawable/text_border"
+                android:hint="Enter mobile Number"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:nextFocusDown="@+id/edit_dob"
+                android:textColor="@color/colorBlack"
+                android:textCursorDrawable="@null" />
+
+            <TextView
+                android:id="@+id/text_mPin_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/edit_mobile_phone"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="M-Pin (4 Digits)"
+                android:textColor="@color/colorSecondaryText"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_mpin_layout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/std_40_dp"
+                android:layout_below="@+id/text_mPin_header"
+                android:layout_marginTop="@dimen/std_16_dp"
+                app:hintEnabled="false"
+                app:passwordToggleDrawable="@drawable/password_visibility_toggle"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/colorNewUxLightGray">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_mPin"
+                    style="@style/AppTheme.TILEditText1"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/std_40_dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/text_border"
+                    android:gravity="start|center"
+                    android:hint="Enter mPin (4 Digits)"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:paddingStart="@dimen/std_10_dp"
+                    android:paddingEnd="@dimen/std_10_dp"
+                    android:paddingRight="@dimen/std_10_dp"
+                    android:textColor="@color/colorBlack" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/text_personal_info"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/edit_mpin_layout"
+                android:layout_marginTop="@dimen/extra_large_margin"
+                android:text="Personal Info" />
+
+            <TextView
+                android:id="@+id/text_first_and_last_name_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_personal_info"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="First and Last Name"
+                android:textColor="@color/colorSecondaryText"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/name_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_first_and_last_name_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/edit_first_name"
+                    style="@style/AppTheme.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/text_border"
+                    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+                    android:hint="Enter first Name"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPersonName|textCapWords"
+                    android:nextFocusDown="@+id/edit_last_name"
+                    android:textColor="@color/colorBlack"
+                    android:textCursorDrawable="@null" />
+
+                <EditText
+                    android:id="@+id/edit_last_name"
+                    style="@style/AppTheme.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/medium_margin"
+                    android:layout_weight="1"
+                    android:background="@drawable/text_border"
+                    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+                    android:hint="Enter last Name"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPersonName|textCapWords"
+                    android:nextFocusDown="@+id/edit_address"
+                    android:textColor="@color/colorBlack"
+                    android:textCursorDrawable="@null" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/text_email_id_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/name_layout"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="Email Id"
+                android:textColor="@color/colorSecondaryText"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edit_email"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_email_id_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:background="@drawable/text_border"
+                android:hint="Enter email id"
+                android:inputType="textEmailAddress"
+                android:nextFocusDown="@+id/edit_password"
+                android:textColor="@color/colorBlack"
+                android:textCursorDrawable="@null" />
+
+            <TextView
+                android:id="@+id/text_dob_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/edit_email"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="Date Of Birth"
+                android:textColor="@color/colorSecondaryText"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edit_dob"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_dob_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:background="@drawable/text_border"
+                android:hint="Select date of birth"
+                android:imeOptions="actionNext"
+                android:inputType="none"
+                android:nextFocusDown="@+id/edit_vehicle_no"
+                android:textColor="@color/colorBlack"
+                android:textCursorDrawable="@null" />
+
+            <TextView
+                android:id="@+id/text_gender_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/edit_dob"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="Gender"
+                android:textColor="@color/colorSecondaryText"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_gender"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_gender_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:background="@drawable/text_border"
+                android:hint="Select gender"
+                android:nextFocusDown="@+id/btn_signup"
+                android:textColor="@color/colorBlack"
+                android:textCursorDrawable="@null" />
+
+            <Button
+                android:id="@+id/btn_signup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_gender"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/button_all_radius_rounded_deep_corner"
+                android:gravity="center"
+                android:text="SignUp"
+                android:textAllCaps="true"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/std_18_sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

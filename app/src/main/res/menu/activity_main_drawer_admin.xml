@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_create_task"
+            android:icon="@drawable/ic_configuration"
+            android:title="Create Tasks" />
+
+        <item
+            android:id="@+id/nav_all_tasks"
+            android:icon="@drawable/ic_task_calender"
+            android:title="All Tasks" />
+    </group>
+</menu>

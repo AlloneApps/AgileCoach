@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/create_task_coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:background="@color/colorWhite">
+
+    <ScrollView
+        android:id="@+id/create_task_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="false"
+        android:scrollbarStyle="insideOverlay">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:paddingStart="@dimen/relative_horizontal_padding"
+            android:paddingLeft="@dimen/relative_horizontal_padding"
+            android:paddingEnd="@dimen/relative_horizontal_padding"
+            android:paddingRight="@dimen/relative_horizontal_padding"
+            android:paddingBottom="@dimen/relative_vertical_padding">
+
+            <TextView
+                android:id="@+id/text_task_info"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Task Info" />
+
+            <TextView
+                android:id="@+id/text_task_type_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_below="@+id/text_task_info"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorSecondaryText"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="Task Type" />
+
+            <TextView
+                android:id="@+id/text_task_type"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_task_type_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:background="@drawable/text_border"
+                android:drawableEnd="@drawable/ic_expand_more"
+                android:hint="Select task type"
+                android:inputType="none"
+                android:nextFocusDown="@+id/edit_insurance_company"
+                android:textColor="@color/colorBlack"
+                android:textColorHint="@color/colorDarkGrayBorder" />
+
+            <TextView
+                android:id="@+id/text_task_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_below="@+id/text_task_type"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorSecondaryText"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="Task Header" />
+
+            <EditText
+                android:id="@+id/edit_task_header"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_task_header"
+                android:background="@drawable/text_border"
+                android:hint="Enter task header"
+                android:inputType="textCapSentences"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:nextFocusDown="@+id/edit_zip_code"
+                android:textColor="@color/colorBlack"
+                android:textColorHint="@color/colorDarkGrayBorder" />
+
+            <TextView
+                android:id="@+id/text_task_desc_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_below="@+id/edit_task_header"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorSecondaryText"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="Task Description" />
+
+            <EditText
+                android:id="@+id/edit_task_description"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_task_desc_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:background="@drawable/text_border"
+                android:hint="Enter task description"
+                android:inputType="textLongMessage"
+                android:nextFocusDown="@+id/edit_state"
+                android:textColor="@color/colorBlack"
+                android:textColorHint="@color/colorDarkGrayBorder" />
+
+            <TextView
+                android:id="@+id/text_task_estimation_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_below="@+id/edit_task_description"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorSecondaryText"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="Estimation (Hrs) - Optional" />
+
+            <EditText
+                android:id="@+id/edit_task_estimation"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_task_estimation_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:background="@drawable/text_border"
+                android:inputType="number"
+                android:nextFocusDown="@+id/edit_dob"
+                android:hint="Enter task estimation (optional)"
+                android:textColor="@color/colorBlack"
+                android:textColorHint="@color/colorDarkGrayBorder"
+                android:textCursorDrawable="@null" />
+
+            <TextView
+                android:id="@+id/text_select_user_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_below="@+id/edit_task_estimation"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorSecondaryText"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="Assign To" />
+
+            <TextView
+                android:id="@+id/text_assign_user"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_select_user_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:background="@drawable/text_border"
+                android:drawableEnd="@drawable/ic_expand_more"
+                android:hint="Select task owner"
+                android:inputType="none"
+                android:nextFocusDown="@+id/edit_insurance_company"
+                android:textColor="@color/colorBlack"
+                android:textColorHint="@color/colorDarkGrayBorder" />
+
+            <Button
+                android:id="@+id/btn_create_task"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_assign_user"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="@dimen/extra_large_margin"
+                android:background="@drawable/button_all_radius_rounded_deep_corner"
+                android:gravity="center"
+                android:text="Create Task"
+                android:textAllCaps="true"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/std_18_sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

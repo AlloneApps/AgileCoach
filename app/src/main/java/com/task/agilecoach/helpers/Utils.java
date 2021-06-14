@@ -166,7 +166,7 @@ public class Utils {
         } else {
             User user = getUserDetails(context, userEmail);
             if (user != null) {
-                if (user.getPassword().equals(password)) {
+                if (user.getmPin().equals(password)) {
                     loginResponse.setResponseCode("200");
                     loginResponse.setResponseMessage("Login successfully");
                     loginResponse.setUserDetails(user);
