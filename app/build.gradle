@@ -12,7 +12,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
-        versionName "1.10"
+        versionName "1.11"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -76,4 +76,6 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.0.1'
     // Analog Clock
     implementation 'turki.alkhateeb:vectoranalogclock:1.0.0'
+    // Pi Charts
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }
