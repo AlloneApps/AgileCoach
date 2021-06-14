@@ -143,6 +143,8 @@ public class CreateTasks extends Fragment {
                         tasksSubDetails.setTaskStatus(AppConstants.TODO_STATUS);
                     }
 
+                    tasksSubDetails.setTaskId(taskMasterId);
+
                     tasksSubDetails.setTaskUserAssigned(textAssignedUser.getText().toString().trim());
 
                     User userSelected = userDetailsMap.get(textAssignedUser.getText().toString().trim());
@@ -160,7 +162,6 @@ public class CreateTasks extends Fragment {
 
                     tasksSubDetailsList.add(tasksSubDetails);
                     taskMaster.setTasksSubDetailsList(tasksSubDetailsList);
-
 
                     showProgressDialog("Processing your request.");
 

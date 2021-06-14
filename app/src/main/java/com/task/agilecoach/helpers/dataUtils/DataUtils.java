@@ -99,8 +99,33 @@ public class DataUtils {
         }
     }
 
+    public static List<String> getTaskStatusStringList(Context context) {
+        List<String> tasksStatusStringList = new ArrayList<>();
+        List<TaskStatus> tasksStatusList = new ArrayList<>();
+        try {
+            // load tasks from preference
+            SharedPreferences prefs = context.getSharedPreferences(AppConstants.APP_PREFS, MODE_PRIVATE);
+            Gson gson = new Gson();
+            String readString = prefs.getString(AppConstants.TASKS_STATUS_LIST, "");
+            if (!TextUtils.isEmpty(readString)) {
+                Type type = new TypeToken<ArrayList<TaskStatus>>() {
+                }.getType();
+                tasksStatusList = gson.fromJson(readString, type);
+                for (TaskStatus taskStatus : tasksStatusList) {
+                    tasksStatusStringList.add(taskStatus.getTaskName());
+                }
+                return tasksStatusStringList;
+            } else {
+                return tasksStatusStringList;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return tasksStatusStringList;
+        }
+    }
+
     public static List<TaskMaster> getAssignedTasks(Context context, String taskUserId, boolean isReturnAll) {
-        Log.d(TAG, "getAssignedTasks: taskUserId: "+taskUserId);
+        Log.d(TAG, "getAssignedTasks: taskUserId: " + taskUserId);
         List<TaskMaster> taskMasterFilteredList = new ArrayList<>();
         List<TaskMaster> taskMasterList = new ArrayList<>();
         try {
@@ -119,16 +144,16 @@ public class DataUtils {
                 } else {
                     for (TaskMaster taskMasterMain : taskMasterList) {
                         int lastPosition = taskMasterMain.getTasksSubDetailsList().size() - 1;
-                        Log.d(TAG, "getAssignedTasks lastPosition: "+lastPosition);
+                        Log.d(TAG, "getAssignedTasks lastPosition: " + lastPosition);
                         if (taskMasterMain.getTasksSubDetailsList().get(lastPosition).getTaskUserId().equals(taskUserId)) {
                             taskMasterFilteredList.add(taskMasterMain);
-                            Log.d(TAG, "getAssignedTasks: filteredTask: "+taskMasterMain);
+                            Log.d(TAG, "getAssignedTasks: filteredTask: " + taskMasterMain);
                         }
                     }
                     return taskMasterFilteredList;
                 }
             } else {
-               return taskMasterFilteredList;
+                return taskMasterFilteredList;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,7 +182,7 @@ public class DataUtils {
                 }
                 if (count == 0) {
                     int currentId = (taskMasterList.size() + 1);
-                    taskMaster.setTaskMasterId(currentId+"");
+                    taskMaster.setTaskMasterId(currentId + "");
                     taskMasterList.add(taskMaster);
                     serverResponse.setResponseCode("200");
                     serverResponse.setResponseMessage("Task created successfully.");
@@ -167,7 +192,7 @@ public class DataUtils {
                 }
             } else {
                 taskMasterList = new ArrayList<>();
-                taskMaster.setTaskMasterId(1+"");
+                taskMaster.setTaskMasterId(1 + "");
                 taskMasterList.add(taskMaster);
                 serverResponse.setResponseCode("200");
                 serverResponse.setResponseMessage("Task created successfully.");

@@ -6,6 +6,7 @@ public class FireBaseDatabaseConstants {
     // User Table Name
     public static final String USERS_TABLE = "users";
     public static final String TASK_LIST_TABLE = "taskList";
+    public static final String TASK_SUB_DETAILS_LIST_TABLE = "tasksSubDetailsList";
 
 
     // User Details

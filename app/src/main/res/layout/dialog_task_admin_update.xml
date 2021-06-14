@@ -32,6 +32,7 @@
                 android:id="@+id/layout_task_status_update_sub"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/std_10_dp"
                 android:layout_below="@+id/text_task_admin_update_main_header"
                 android:orientation="vertical">
 
@@ -39,8 +40,8 @@
                     android:id="@+id/text_task_status_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/std_20_dp"
-                    android:layout_marginLeft="@dimen/std_20_dp"
+                    android:layout_marginStart="@dimen/std_10_dp"
+                    android:layout_marginLeft="@dimen/std_10_dp"
                     android:layout_marginTop="@dimen/std_10_dp"
                     android:layout_marginBottom="@dimen/std_10_dp"
                     android:layout_weight="1"
@@ -52,9 +53,11 @@
                     android:id="@+id/text_task_status_value"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/std_20_dp"
-                    android:layout_marginLeft="@dimen/std_20_dp"
+                    android:layout_marginStart="@dimen/std_10_dp"
+                    android:layout_marginLeft="@dimen/std_10_dp"
                     android:layout_marginBottom="@dimen/std_10_dp"
+                    android:drawableEnd="@drawable/ic_drop_down"
+                    android:paddingEnd="@dimen/std_10_dp"
                     android:layout_weight="1"
                     android:textSize="@dimen/std_18_sp"/>
             </LinearLayout>
@@ -88,6 +91,8 @@
                     android:layout_marginStart="@dimen/std_10_dp"
                     android:layout_marginLeft="@dimen/std_10_dp"
                     android:layout_marginBottom="@dimen/std_10_dp"
+                    android:paddingEnd="@dimen/std_10_dp"
+                    android:drawableEnd="@drawable/ic_drop_down"
                     android:layout_weight="1"
                     android:textSize="@dimen/std_18_sp"/>
 

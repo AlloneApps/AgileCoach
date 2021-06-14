@@ -137,9 +137,11 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
                         if (taskMaster != null) {
                             int lastPosition = taskMaster.getTasksSubDetailsList().size() - 1;
                             Log.d(TAG, "getAssignedTasks lastPosition: "+lastPosition);
+                            Log.d(TAG, "getAssignedTasks login user number: "+loginUser.getMobileNumber());
+                            Log.d(TAG, "getAssignedTasks task last assign: "+taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserId());
                             if (taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserId().equals(loginUser.getMobileNumber())) {
                                 myTasksList.add(taskMaster);
-                                Log.d(TAG, "getAssignedTasks: filteredTask: "+myTasksList);
+                                Log.d(TAG, "getAssignedTasks: filteredTask: "+taskMaster);
                             }
                         }
                     }

@@ -2,35 +2,50 @@ package com.task.agilecoach.views.allTasks;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.jakewharton.rxbinding.view.RxView;
 import com.task.agilecoach.R;
 import com.task.agilecoach.helpers.AppConstants;
 import com.task.agilecoach.helpers.FireBaseDatabaseConstants;
+import com.task.agilecoach.helpers.Utils;
+import com.task.agilecoach.helpers.dataUtils.DataUtils;
 import com.task.agilecoach.helpers.myTaskToast.MyTasksToast;
 import com.task.agilecoach.model.TaskMaster;
+import com.task.agilecoach.model.TasksSubDetails;
+import com.task.agilecoach.model.User;
 import com.task.agilecoach.views.main.MainActivity;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemClickListener {
 
@@ -41,6 +56,8 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
     private RelativeLayout recyclerLayout;
 
     List<TaskMaster> allTasksList = new ArrayList<>();
+    List<String> userNameList = new ArrayList<>();
+    HashMap<String, User> userHashMap = new HashMap<>();
 
     private TextView textNoTasks;
     private AllTasksAdapter allTasksAdapter;
@@ -77,7 +94,9 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
             progressDialog = new ProgressDialog(requireContext());
 
             loadAllTaskList();
-        }catch (Exception e){
+
+            loadAllUsersList();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -108,7 +127,7 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.TASK_LIST_TABLE);
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot snapshot) {
+                public void onDataChange(@NotNull DataSnapshot snapshot) {
                     allTasksList.clear();
                     for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                         TaskMaster taskMaster = postSnapshot.getValue(TaskMaster.class);
@@ -156,6 +175,9 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
 
     public void showDialogForTaskStatusUpdateAdmin(Context context, int position, TaskMaster taskMaster) {
         try {
+            String lastStatus = "";
+            String assignedTo = "";
+
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             LayoutInflater inflater = this.getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.dialog_task_admin_update, null);
@@ -172,6 +194,67 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
             Button btnUpdate = dialogView.findViewById(R.id.btn_update);
             Button btnClose = dialogView.findViewById(R.id.btn_close);
 
+            List<String> taskStatusList = DataUtils.getTaskStatusStringList(requireContext());
+
+            RxView.touches(textTaskStatusValue).subscribe(motionEvent -> {
+                try {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                        AlertDialog.Builder builderSingle = new AlertDialog.Builder(requireContext());
+                        builderSingle.setTitle("Task Status");
+
+                        final ArrayAdapter<String> taskStatusSelectionAdapter = new ArrayAdapter<String>(requireContext(),
+                                android.R.layout.select_dialog_singlechoice, taskStatusList) {
+                            @NonNull
+                            @Override
+                            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                View view = super.getView(position, convertView, parent);
+                                TextView text = view.findViewById(android.R.id.text1);
+                                text.setTextColor(Color.BLACK);
+                                return view;
+                            }
+                        };
+
+                        builderSingle.setNegativeButton("Cancel", (dialog, subPosition) -> dialog.dismiss());
+
+                        builderSingle.setAdapter(taskStatusSelectionAdapter, (dialog, subPosition) -> {
+                            textTaskStatusValue.setText(taskStatusSelectionAdapter.getItem(subPosition));
+                        });
+                        builderSingle.show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            RxView.touches(textAssignToValue).subscribe(motionEvent -> {
+                try {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                        AlertDialog.Builder builderSingle = new AlertDialog.Builder(requireContext());
+                        builderSingle.setTitle("Assign To");
+
+                        final ArrayAdapter<String> userSelectionAdapter = new ArrayAdapter<String>(requireContext(),
+                                android.R.layout.select_dialog_singlechoice, userNameList) {
+                            @NonNull
+                            @Override
+                            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                View view = super.getView(position, convertView, parent);
+                                TextView text = view.findViewById(android.R.id.text1);
+                                text.setTextColor(Color.BLACK);
+                                return view;
+                            }
+                        };
+
+                        builderSingle.setNegativeButton("Cancel", (dialog, subPosition) -> dialog.dismiss());
+
+                        builderSingle.setAdapter(userSelectionAdapter, (dialog, subPosition) -> {
+                            textAssignToValue.setText(userSelectionAdapter.getItem(subPosition));
+                        });
+                        builderSingle.show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
 
             String headerMessage = taskMaster.getTaskType() + " : " + taskMaster.getTaskMasterId();
             textMainHeader.setText(headerMessage);
@@ -190,27 +273,46 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
             textAssignToHeader.setText("Assigned To");
 
             int lastPosition = (taskMaster.getTasksSubDetailsList().size() - 1);
-
             Log.d(TAG, "showAlertForUpdateBankDetails: lastPosition: " + lastPosition);
 
             if (lastPosition >= 0) {
-                String lastStatus = taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskStatus();
+                lastStatus = taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskStatus();
                 Log.d(TAG, "showAlertForUpdateBankDetails: lastStatus: " + lastStatus);
                 textTaskStatusValue.setText(lastStatus);
-                String assignedTo = taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserAssigned();
+                assignedTo = taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserAssigned();
                 textAssignToValue.setText(assignedTo);
-
             }
 
             AlertDialog alert = builder.create();
             alert.show();
 
+            String finalLastStatus = lastStatus;
+            String finalAssignedTo = assignedTo;
             btnUpdate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
-                        MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-                        alert.dismiss();
+                        if (!(finalLastStatus.equalsIgnoreCase(textTaskStatusValue.getText().toString().trim())) || !finalAssignedTo.equalsIgnoreCase(textAssignToValue.getText().toString().trim())) {
+
+                            User loginUser = Utils.getLoginUserDetails(requireContext());
+
+                            TasksSubDetails tasksSubDetails = new TasksSubDetails();
+                            tasksSubDetails.setTaskId(taskMaster.getTaskMasterId());
+                            tasksSubDetails.setModifiedBy(loginUser.getEmailId());
+                            tasksSubDetails.setModifiedOn(Utils.getCurrentTimeStampWithSeconds());
+
+                            tasksSubDetails.setTaskStatus(textTaskStatusValue.getText().toString().trim());
+                            tasksSubDetails.setTaskUserAssigned(textAssignToValue.getText().toString().trim());
+
+                            String taskUserId = Objects.requireNonNull(userHashMap.get(textAssignToValue.getText().toString().trim())).getMobileNumber();
+                            tasksSubDetails.setTaskUserId(taskUserId);
+
+                            taskMaster.getTasksSubDetailsList().add(tasksSubDetails);
+
+                            updateTaskOrBug(position, taskMaster,alert);
+                        } else {
+                            MyTasksToast.showInfoToast(requireContext(), "Nothing to Update.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -229,6 +331,40 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
             });
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void updateTaskOrBug(int position, TaskMaster taskMaster, AlertDialog alert) {
+        try {
+            showProgressDialog("Processing your request.");
+
+            Log.d(TAG, "updateTaskOrBug: taskMaster: " + taskMaster);
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.TASK_LIST_TABLE);
+
+            databaseReference.child(taskMaster.getTaskMasterId()).setValue(taskMaster)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            hideProgressDialog();
+                            MyTasksToast.showSuccessToastWithBottom(requireContext(), taskMaster.getTaskType() + " details updated successfully", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                            if (alert != null) {
+                                alert.dismiss();
+                            }
+                            allTasksAdapter.notifyItemChanged(position);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            hideProgressDialog();
+                            MyTasksToast.showErrorToastWithBottom(requireContext(), "Failed to update " + taskMaster.getTaskType() + " details, Try again.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                        }
+                    });
+        } catch (Exception e) {
+            hideProgressDialog();
+            MyTasksToast.showErrorToastWithBottom(requireContext(), e.getMessage(), MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
             e.printStackTrace();
         }
     }
@@ -252,6 +388,38 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
                 progressDialog.dismiss();
             }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadAllUsersList() {
+        try {
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    userNameList.clear();
+                    userHashMap.clear();
+                    for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                        User userMain = postSnapshot.getValue(User.class);
+                        Log.d(TAG, "onDataChange: userMain: " + userMain);
+                        if (userMain != null) {
+                            if (!(userMain.getRole().equalsIgnoreCase(AppConstants.ADMIN_ROLE))) {
+                                String userFullName = userMain.getFirstName() + " " + userMain.getLastName();
+                                userNameList.add(userFullName);
+                                userHashMap.put(userFullName, userMain);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d(TAG, "onCancelled: failed to load user details");
+                }
+            });
+        } catch (Exception e) {
+            Log.d(TAG, "loadAllUsers: exception: " + e.getMessage());
             e.printStackTrace();
         }
     }
