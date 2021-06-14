@@ -146,10 +146,6 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
         }
     }
 
-    private void navigateToDashboard() {
-        requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_main, new AllTasks()).commit();
-    }
-
     @Override
     public void assignTask(int position, TaskMaster taskMaster) {
         MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
