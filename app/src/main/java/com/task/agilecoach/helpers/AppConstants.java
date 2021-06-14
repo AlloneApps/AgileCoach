@@ -5,7 +5,7 @@ public class AppConstants {
     public static final String APP_PREFS = "App Prefs";
 
     // Task or Bug Prefix
-    public static final String TASK_OR_BUG_PREFIX = "BT00";
+//    public static final String TASK_OR_BUG_PREFIX = "BT00";
 
     // Stored Data
     public static final String USER_LIST = "User List";

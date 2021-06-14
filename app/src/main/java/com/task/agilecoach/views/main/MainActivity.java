@@ -114,7 +114,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (loginUser != null) {
                 String userName = "";
                 if (loginUser.getRole().equals(AppConstants.ADMIN_ROLE)) {
-                    userName = loginUser.getFirstName() + " (" + loginUser.getRole() + ")";
+//                    userName = loginUser.getFirstName() + " (" + loginUser.getRole() + ")";
+                    userName = loginUser.getFirstName() + " " + loginUser.getLastName() + " (" + loginUser.getRole() + ")";
                 } else {
                     userName = loginUser.getFirstName() + " " + loginUser.getLastName() + " (" + loginUser.getRole() + ")";
                 }

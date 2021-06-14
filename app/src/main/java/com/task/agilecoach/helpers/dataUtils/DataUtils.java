@@ -157,7 +157,7 @@ public class DataUtils {
                 }
                 if (count == 0) {
                     int currentId = (taskMasterList.size() + 1);
-                    taskMaster.setTaskMasterId(currentId);
+                    taskMaster.setTaskMasterId(currentId+"");
                     taskMasterList.add(taskMaster);
                     serverResponse.setResponseCode("200");
                     serverResponse.setResponseMessage("Task created successfully.");
@@ -167,7 +167,7 @@ public class DataUtils {
                 }
             } else {
                 taskMasterList = new ArrayList<>();
-                taskMaster.setTaskMasterId(1);
+                taskMaster.setTaskMasterId(1+"");
                 taskMasterList.add(taskMaster);
                 serverResponse.setResponseCode("200");
                 serverResponse.setResponseMessage("Task created successfully.");

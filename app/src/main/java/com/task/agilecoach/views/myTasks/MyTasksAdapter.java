@@ -77,7 +77,7 @@ public class MyTasksAdapter extends RecyclerView.Adapter<MyTasksAdapter.PickUpRe
                     }
                 }
 
-                String taskNumber = AppConstants.TASK_OR_BUG_PREFIX+taskMaster.getTaskMasterId();
+                String taskNumber = taskMaster.getTaskMasterId();
                 holder.textTaskNumber.setText(taskNumber);
 
                 holder.textTaskHeader.setText(taskMaster.getTaskHeader());

@@ -1,5 +1,6 @@
 package com.task.agilecoach.views.allTasks;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,14 +17,16 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.task.agilecoach.R;
 import com.task.agilecoach.helpers.AppConstants;
-import com.task.agilecoach.helpers.Utils;
-import com.task.agilecoach.helpers.dataUtils.DataUtils;
+import com.task.agilecoach.helpers.FireBaseDatabaseConstants;
 import com.task.agilecoach.helpers.myTaskToast.MyTasksToast;
 import com.task.agilecoach.model.TaskMaster;
-import com.task.agilecoach.model.User;
-import com.task.agilecoach.views.myTasks.MyTasksAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,7 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
 
     private static final String TAG = "AllTasks";
     private View rootView;
+    private ProgressDialog progressDialog;
     private TextView textTitle;
     private RecyclerView taskRecyclerView;
     private RelativeLayout recyclerLayout;
@@ -68,6 +72,8 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
     public void onActivityCreated(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        progressDialog = new ProgressDialog(requireContext());
+
         try {
             textTitle = requireActivity().findViewById(R.id.title_header);
             if (textTitle != null) {
@@ -78,9 +84,9 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
             e.printStackTrace();
         }
 
-        loadAllTasksList();
+        loadAllTaskList();
 
-        setUpViews();
+//        setUpViews();
     }
 
     private void setUpViews() {
@@ -93,7 +99,7 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
             taskRecyclerView.setLayoutManager(linearLayoutManager);
-            allTasksAdapter = new AllTasksAdapter(requireContext(),allTasksList,this);
+            allTasksAdapter = new AllTasksAdapter(requireContext(), allTasksList, this);
             taskRecyclerView.setAdapter(allTasksAdapter);
             allTasksAdapter.notifyDataSetChanged();
         } else {
@@ -102,13 +108,41 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
         }
     }
 
-    private void loadAllTasksList() {
-        User loginUser = Utils.getLoginUserDetails(requireContext());
-        if (loginUser != null) {
-            Log.d(TAG, "onCreate: userName:  " + loginUser.getFirstName());
-            Log.d(TAG, "onCreate: userId:  " + loginUser.getMobileNumber());
-            allTasksList = DataUtils.getAssignedTasks(requireContext(), loginUser.getMobileNumber(), true);
-            Log.d(TAG, "onCreate: tasksList: " + allTasksList);
+    public void loadAllTaskList() {
+        try {
+            showProgressDialog("Loading task details, please wait.");
+
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.TASK_LIST_TABLE);
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    allTasksList.clear();
+                    for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                        TaskMaster taskMaster = postSnapshot.getValue(TaskMaster.class);
+                        if (taskMaster != null) {
+                            allTasksList.add(taskMaster);
+                        }
+                    }
+                    Log.d(TAG, "onDataChange: taskMasterList:" + allTasksList);
+
+                    hideProgressDialog();
+
+                    setUpViews();
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    hideProgressDialog();
+                    setUpViews();
+                    Log.d(TAG, "onCancelled: failed to load user details");
+                }
+            });
+        } catch (Exception e) {
+            hideProgressDialog();
+            setUpViews();
+            Log.d(TAG, "loadAllUsers: exception: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -118,27 +152,27 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
 
     @Override
     public void assignTask(int position, TaskMaster taskMaster) {
-        MyTasksToast.showInfoToast(requireContext(),"Implementation Pending.",MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+        MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
     }
 
     @Override
     public void changeStatus(int position, TaskMaster taskMaster) {
-        showDialogForTaskStatusUpdateAdmin(requireContext(),position, taskMaster);
+        showDialogForTaskStatusUpdateAdmin(requireContext(), position, taskMaster);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        try{
+        try {
             if (textTitle != null) {
                 textTitle.setText("");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void showDialogForTaskStatusUpdateAdmin(Context context,int position, TaskMaster taskMaster) {
+    public void showDialogForTaskStatusUpdateAdmin(Context context, int position, TaskMaster taskMaster) {
         try {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             LayoutInflater inflater = this.getLayoutInflater();
@@ -157,7 +191,7 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
             Button btnClose = dialogView.findViewById(R.id.btn_close);
 
 
-            String headerMessage = taskMaster.getTaskType() + " : " + AppConstants.TASK_OR_BUG_PREFIX + taskMaster.getTaskMasterId();
+            String headerMessage = taskMaster.getTaskType() + " : " + taskMaster.getTaskMasterId();
             textMainHeader.setText(headerMessage);
 
             if (taskMaster.getTaskType().equals(AppConstants.BUG_TYPE)) {
@@ -212,6 +246,29 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
                 }
             });
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showProgressDialog(String message) {
+        try {
+            if (progressDialog != null) {
+                progressDialog.setMessage(message);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void hideProgressDialog() {
+        try {
+            if (progressDialog != null) {
+                progressDialog.dismiss();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

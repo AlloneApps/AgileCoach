@@ -14,7 +14,9 @@ import com.task.agilecoach.model.TaskStatus;
 import com.task.agilecoach.model.User;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -214,5 +216,17 @@ public class Utils {
     public static void removeAllDataWhenLogout(Context context){
         removeLoginUserDetails(context);
         removeSharedPrefsString(context,AppConstants.LOGIN_TOKEN);
+    }
+
+    public static String getCurrentTimeStampWithSeconds(){
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            String currentDateTime = dateFormat.format(new Date()); // Find todays date
+
+            return currentDateTime;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }

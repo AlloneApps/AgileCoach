@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="No tasks assigned to you"
+        android:text="No tasks available"
         android:textColor="@color/colorAccent"
         android:textSize="16sp"
         android:visibility="gone" />

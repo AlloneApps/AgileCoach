@@ -159,7 +159,7 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
             Button btnClose = dialogView.findViewById(R.id.btn_close);
 
 
-            String headerMessage = taskMaster.getTaskType() + " :" + AppConstants.TASK_OR_BUG_PREFIX + taskMaster.getTaskMasterId();
+            String headerMessage = taskMaster.getTaskType() + " :"+ taskMaster.getTaskMasterId();
             textMainHeader.setText(headerMessage);
             textTaskStatusHeader.setText("Task Status");
             textAssignToHeader.setText("Assigned To");

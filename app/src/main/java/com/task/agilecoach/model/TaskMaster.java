@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TaskMaster implements Parcelable {
-    private int taskMasterId;
+    private String taskMasterId;
     private String taskHeader;
     private String taskDescription;
     private String taskCreatedBy;
@@ -20,7 +20,7 @@ public class TaskMaster implements Parcelable {
     }
 
     protected TaskMaster(Parcel in) {
-        taskMasterId = in.readInt();
+        taskMasterId = in.readString();
         taskHeader = in.readString();
         taskDescription = in.readString();
         taskCreatedBy = in.readString();
@@ -42,11 +42,11 @@ public class TaskMaster implements Parcelable {
         }
     };
 
-    public int getTaskMasterId() {
+    public String getTaskMasterId() {
         return taskMasterId;
     }
 
-    public void setTaskMasterId(int taskMasterId) {
+    public void setTaskMasterId(String taskMasterId) {
         this.taskMasterId = taskMasterId;
     }
 
@@ -109,7 +109,7 @@ public class TaskMaster implements Parcelable {
     @Override
     public String toString() {
         return "TaskMaster{" +
-                "taskMasterId=" + taskMasterId +
+                "taskMasterId='" + taskMasterId + '\'' +
                 ", taskHeader='" + taskHeader + '\'' +
                 ", taskDescription='" + taskDescription + '\'' +
                 ", taskCreatedBy='" + taskCreatedBy + '\'' +
@@ -127,7 +127,7 @@ public class TaskMaster implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(taskMasterId);
+        parcel.writeString(taskMasterId);
         parcel.writeString(taskHeader);
         parcel.writeString(taskDescription);
         parcel.writeString(taskCreatedBy);

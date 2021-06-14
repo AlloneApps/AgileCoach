@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class TasksSubDetails implements Parcelable {
-    private int taskId;
+    private String taskId;
     private String taskStatus;
     private String taskUserAssigned;
     private String taskUserId;
@@ -15,7 +15,7 @@ public class TasksSubDetails implements Parcelable {
     }
 
     protected TasksSubDetails(Parcel in) {
-        taskId = in.readInt();
+        taskId = in.readString();
         taskStatus = in.readString();
         taskUserAssigned = in.readString();
         taskUserId = in.readString();
@@ -35,11 +35,11 @@ public class TasksSubDetails implements Parcelable {
         }
     };
 
-    public int getTaskId() {
+    public String getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(int taskId) {
+    public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
 
@@ -86,7 +86,7 @@ public class TasksSubDetails implements Parcelable {
     @Override
     public String toString() {
         return "TasksSubDetails{" +
-                "taskId=" + taskId +
+                "taskId='" + taskId + '\'' +
                 ", taskStatus='" + taskStatus + '\'' +
                 ", taskUserAssigned='" + taskUserAssigned + '\'' +
                 ", taskUserId='" + taskUserId + '\'' +
@@ -102,7 +102,7 @@ public class TasksSubDetails implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(taskId);
+        parcel.writeString(taskId);
         parcel.writeString(taskStatus);
         parcel.writeString(taskUserAssigned);
         parcel.writeString(taskUserId);

@@ -49,7 +49,7 @@ import java.util.Locale;
 public class SignupActivity extends AppCompatActivity {
 
     private static final String TAG = "SignupActivity";
-    private EditText editEmailId,editFirstName, editLastName, editMobileNumber, editDob;
+    private EditText editEmailId, editFirstName, editLastName, editMobileNumber, editDob;
     private TextInputEditText mPin;
     private TextView textGender;
     private Button btnSignup;
@@ -156,6 +156,8 @@ public class SignupActivity extends AppCompatActivity {
                     if (isNotExistUser) {
                         showProgressDialog("Processing please wait.");
                         signUpNewUser(SignupActivity.this, user);
+                    } else {
+                        MyTasksToast.showErrorToastWithBottom(SignupActivity.this, "Mobile number already exists", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
                     }
                 }
             }
@@ -271,7 +273,6 @@ public class SignupActivity extends AppCompatActivity {
                     Log.d(TAG, "onDataChange: mobileNumber: " + mobileNumber);
                     if (mobileNumber != null) {
                         if (mobileNumber.equals(user.getMobileNumber())) {
-                            MyTasksToast.showErrorToastWithBottom(context, "Mobile number already exists", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
                             returnValue[0] = false;
                         } else {
                             returnValue[0] = true;
