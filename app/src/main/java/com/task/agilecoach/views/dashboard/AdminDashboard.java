@@ -2,6 +2,7 @@ package com.task.agilecoach.views.dashboard;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,25 +11,38 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.formatter.LargeValueFormatter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.task.agilecoach.R;
+import com.task.agilecoach.helpers.AppConstants;
+import com.task.agilecoach.helpers.FireBaseDatabaseConstants;
+import com.task.agilecoach.model.TaskMaster;
+import com.task.agilecoach.model.User;
 import com.task.agilecoach.views.main.MainActivity;
 import com.task.agilecoach.views.main.MyVectorClock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class AdminDashboard extends Fragment {
 
     private static final String TAG = "DashboardFragment";
 
     private View rootView;
+    List<TaskMaster> allTasksList = new ArrayList<>();
+    List<User> userList = new ArrayList<>();
 
     private PieChart pieChartUsers, pieChartTasks;
 
@@ -45,24 +59,13 @@ public class AdminDashboard extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*User loginUser = Utils.getLoginUserDetails(requireContext());
-
-        if(loginUser != null){
-            Log.d(TAG, "onCreate: userName:  "+loginUser.getFirstName());
-            Log.d(TAG, "onCreate: userId:  "+loginUser.getMobileNumber());
-            List<TaskMaster> tasksList = DataUtils.getAssignedTasks(requireContext(),loginUser.getMobileNumber(),false);
-            Log.d(TAG, "onCreate: tasksList: "+tasksList);
-        }*/
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_user_dashboard, container, false);
+        rootView = inflater.inflate(R.layout.fragment_admin_dashboard, container, false);
         return rootView;
     }
 
@@ -70,185 +73,309 @@ public class AdminDashboard extends Fragment {
     public void onActivityCreated(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ((MainActivity) requireActivity()).setTitle("Dashboard");
+        try {
+            ((MainActivity) requireActivity()).setTitle("Dashboard");
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR, 0);
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.HOUR, 0);
 
-        MyVectorClock vectorAnalogClock = rootView.findViewById(R.id.clock);
+            MyVectorClock vectorAnalogClock = rootView.findViewById(R.id.clock);
 
-        //customization
-        vectorAnalogClock.setCalendar(calendar)
-                .setDiameterInDp(400.0f)
-                .setOpacity(1.0f)
-                .setShowSeconds(true)
-                .setColor(Color.BLACK);
+            //customization
+            vectorAnalogClock.setCalendar(calendar)
+                    .setDiameterInDp(400.0f)
+                    .setOpacity(1.0f)
+                    .setShowSeconds(true)
+                    .setColor(Color.BLACK);
 
-        setUpView();
+            setUpView();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
-    private void setUpView(){
-        pieChartUsers = rootView.findViewById(R.id.pie_chart_users);
-        pieChartTasks = rootView.findViewById(R.id.pie_chart_tasks);
+    private void setUpView() {
+        try {
+            pieChartUsers = rootView.findViewById(R.id.pie_chart_users);
+            pieChartTasks = rootView.findViewById(R.id.pie_chart_tasks);
 
+            setPieChartOfUser();
 
-        setPieChart1();
+            setPieChartOfTasks();
 
-        setPieChart2();
+            loadAllUsersList();
 
+            loadAllTaskList();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
-    private void setPieChart1() {
-        pieChartUsers.setUsePercentValues(true);
-        pieChartUsers.setDrawEntryLabels(false);
-        pieChartUsers.getDescription().setEnabled(false);
-        pieChartUsers.setExtraOffsets(0, 0, 0, 10);
+    public void loadAllTaskList() {
+        try {
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.TASK_LIST_TABLE);
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NotNull DataSnapshot snapshot) {
+                    allTasksList.clear();
+                    for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                        TaskMaster taskMaster = postSnapshot.getValue(TaskMaster.class);
+                        if (taskMaster != null) {
+                            allTasksList.add(taskMaster);
+                        }
+                    }
+                    Log.d(TAG, "onDataChange: taskMasterList:" + allTasksList);
+                    generatePieChartForTasks(allTasksList);
 
-        pieChartUsers.setDragDecelerationFrictionCoef(0.95f);
+                }
 
-        pieChartUsers.setDrawHoleEnabled(false);
-
-        pieChartUsers.setTransparentCircleColor(Color.WHITE);
-        pieChartUsers.setTransparentCircleAlpha(110);
-
-        pieChartUsers.setHoleRadius(58f);
-        pieChartUsers.setTransparentCircleRadius(61f);
-
-        pieChartUsers.setDrawCenterText(false);
-
-        pieChartUsers.setRotationAngle(0);
-        // enable rotation of the chart by touch
-        pieChartUsers.setRotationEnabled(true);
-        pieChartUsers.setHighlightPerTapEnabled(true);
-
-        generatePieData1(" Length Segregation");
-
-        pieChartUsers.animateY(500, Easing.EaseInOutQuad);
-        // pieChartUsers.spin(2000, 0, 360);
-
-        Legend l = pieChartUsers.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
-        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        l.setDrawInside(false);
-        l.setXEntrySpace(0f);
-        l.setYEntrySpace(0f);
-        l.setYOffset(0f);
-        l.setXOffset(0f);
-        l.setTextSize(8f);
-
-        // entry label styling
-        pieChartUsers.setEntryLabelColor(Color.WHITE);
-        pieChartUsers.setEntryLabelTextSize(12f);
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    generatePieChartForTasks(allTasksList);
+                    Log.d(TAG, "onCancelled: failed to load user details");
+                }
+            });
+        } catch (Exception e) {
+            generatePieChartForTasks(allTasksList);
+            Log.d(TAG, "loadAllUsers: exception: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    private void setPieChart2() {
-        pieChartTasks.setUsePercentValues(true);
-        pieChartTasks.setDrawEntryLabels(false);
-        pieChartTasks.getDescription().setEnabled(false);
-        pieChartTasks.setExtraOffsets(0, 0, 0, 10);
+    public void loadAllUsersList() {
+        try {
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    userList.clear();
+                    for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                        User userMain = postSnapshot.getValue(User.class);
+                        Log.d(TAG, "onDataChange: userMain: " + userMain);
+                        if (userMain != null) {
+                            if (!(userMain.getRole().equalsIgnoreCase(AppConstants.ADMIN_ROLE))) {
+                                userList.add(userMain);
+                            }
+                        }
+                    }
+                    generatePieChartForUserDetails(userList);
+                }
 
-        pieChartTasks.setDragDecelerationFrictionCoef(0.95f);
-
-        pieChartTasks.setDrawHoleEnabled(false);
-
-        pieChartTasks.setTransparentCircleColor(Color.WHITE);
-        pieChartTasks.setTransparentCircleAlpha(110);
-
-        pieChartTasks.setHoleRadius(58f);
-        pieChartTasks.setTransparentCircleRadius(61f);
-
-        pieChartTasks.setDrawCenterText(false);
-
-        pieChartTasks.setRotationAngle(0);
-        // enable rotation of the chart by touch
-        pieChartTasks.setRotationEnabled(true);
-        pieChartTasks.setHighlightPerTapEnabled(true);
-
-        generatePieData2(" Quality Segregation");
-
-        pieChartTasks.animateY(500, Easing.EaseInOutQuad);
-        // pieChartTasks.spin(2000, 0, 360);
-
-        Legend l = pieChartTasks.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
-        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        l.setDrawInside(false);
-        l.setXEntrySpace(0f);
-        l.setYEntrySpace(0f);
-        l.setYOffset(0f);
-        l.setXOffset(0f);
-        l.setTextSize(8f);
-
-        // entry label styling
-        pieChartTasks.setEntryLabelColor(Color.WHITE);
-        pieChartTasks.setEntryLabelTextSize(12f);
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    generatePieChartForUserDetails(userList);
+                    Log.d(TAG, "onCancelled: failed to load user details");
+                }
+            });
+        } catch (Exception e) {
+            generatePieChartForUserDetails(userList);
+            Log.d(TAG, "loadAllUsers: exception: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    private void generatePieData1(String text) {
+    private void generatePieChartForUserDetails(List<User> userList) {
+        try {
 
-        ArrayList<PieEntry> entries = new ArrayList<>();
+            int activeUsers = 0;
+            int inActiveUsers = 0;
+            int totalUsers = 0;
 
-        entries.add(new PieEntry(27, "40cm "));
-        entries.add(new PieEntry(25, "50cm "));
-        entries.add(new PieEntry(35, "60cm "));
-        entries.add(new PieEntry(13, "70cm "));
+            for (User user : userList) {
+                if (user.isActive()) {
+                    activeUsers = activeUsers + 1;
+                    totalUsers = totalUsers + 1;
+                } else {
+                    inActiveUsers = inActiveUsers + 1;
+                    totalUsers = totalUsers + 1;
+                }
+            }
 
-        PieDataSet dataSet = new PieDataSet(entries, text);
-        dataSet.setSliceSpace(3f);
-        dataSet.setSelectionShift(5f);
+            Log.d(TAG, "generatePieChartForUserDetails: activeUsers: " + activeUsers);
+            Log.d(TAG, "generatePieChartForUserDetails: inActiveUsers: " + inActiveUsers);
 
-        // add a lot of colors
-        ArrayList<Integer> colors = new ArrayList<>();
+            ArrayList<PieEntry> entries = new ArrayList<>();
 
-        colors.add(Color.rgb(224, 64, 10));
-        colors.add(Color.rgb(5, 100, 146));
-        colors.add(Color.rgb(65, 140, 240));
-        colors.add(Color.rgb(252, 180, 65));
 
-        dataSet.setColors(colors);
+            entries.add(new PieEntry(activeUsers, "Active  "));
+            entries.add(new PieEntry(inActiveUsers, "InActive  "));
 
-        PieData data = new PieData(dataSet);
-        data.setValueFormatter(new PercentFormatter());
-        data.setValueTextSize(11f);
-        data.setValueTextColor(Color.WHITE);
-        pieChartUsers.setData(data);
 
-        // undo all highlights
-        pieChartUsers.highlightValues(null);
+            String totalUsersTitle = "Total users : " + totalUsers;
+            PieDataSet dataSet = new PieDataSet(entries, totalUsersTitle);
+            dataSet.setSliceSpace(3f);
+            dataSet.setSelectionShift(5f);
 
-        pieChartUsers.invalidate();
+            // add a lot of colors
+            ArrayList<Integer> colors = new ArrayList<>();
+
+            colors.add(Color.rgb(50, 205, 50));
+            colors.add(Color.rgb(255, 0, 0));
+
+            dataSet.setColors(colors);
+
+            PieData data = new PieData(dataSet);
+            data.setValueFormatter(new LargeValueFormatter());
+            data.setValueTextSize(11f);
+            data.setValueTextColor(Color.WHITE);
+            pieChartUsers.setData(data);
+
+            // undo all highlights
+            pieChartUsers.highlightValues(null);
+
+            pieChartUsers.invalidate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private void generatePieData2(String text) {
+    private void generatePieChartForTasks(List<TaskMaster> allTasksList) {
+        try {
+            int totalTasksOrBugs = 0;
+            int totalTasks = 0;
+            int totalBugs = 0;
 
-        ArrayList<PieEntry> entries = new ArrayList<>();
+            for (TaskMaster taskMaster : allTasksList) {
+                if (taskMaster.getTaskType().equalsIgnoreCase(AppConstants.BUG_TYPE)) {
+                    totalBugs = totalBugs + 1;
+                    totalTasksOrBugs = totalTasksOrBugs + 1;
+                } else {
+                    totalTasks = totalTasks + 1;
+                    totalTasksOrBugs = totalTasksOrBugs + 1;
+                }
+            }
 
-        entries.add(new PieEntry(77, "Quality A "));
-        entries.add(new PieEntry(23, "Quality B "));
+            Log.d(TAG, "generatePieChartForTasks: totalTasksOrBugs:" + totalTasksOrBugs);
+            Log.d(TAG, "generatePieChartForTasks: totalTasks:" + totalTasks);
+            Log.d(TAG, "generatePieChartForTasks: totalBugs:" + totalBugs);
 
-        PieDataSet dataSet = new PieDataSet(entries, text);
-        dataSet.setSliceSpace(3f);
-        dataSet.setSelectionShift(5f);
 
-        // add a lot of colors
-        ArrayList<Integer> colors = new ArrayList<>();
+            ArrayList<PieEntry> entries = new ArrayList<>();
 
-        colors.add(Color.rgb(65, 140, 240));
-        colors.add(Color.rgb(252, 180, 65));
+            String tasks = requireContext().getString(R.string.tasks_with_space);
+            String bugs = requireContext().getString(R.string.bugs_with_space);
 
-        dataSet.setColors(colors);
+            entries.add(new PieEntry(totalTasks, tasks));
+            entries.add(new PieEntry(totalBugs, bugs));
 
-        PieData data = new PieData(dataSet);
-        data.setValueFormatter(new PercentFormatter());
-        data.setValueTextSize(11f);
-        data.setValueTextColor(Color.WHITE);
-        pieChartTasks.setData(data);
+            String totalTaskOrBugsString = "Total Tasks or Bugs : " + totalTasksOrBugs;
 
-        // undo all highlights
-        pieChartTasks.highlightValues(null);
+            PieDataSet dataSet = new PieDataSet(entries, totalTaskOrBugsString);
+            dataSet.setSliceSpace(3f);
+            dataSet.setSelectionShift(5f);
 
-        pieChartTasks.invalidate();
+            // add a lot of colors
+            ArrayList<Integer> colors = new ArrayList<>();
+
+            colors.add(Color.rgb(50, 205, 50));
+            colors.add(Color.rgb(255, 0, 0));
+
+            dataSet.setColors(colors);
+
+            PieData data = new PieData(dataSet);
+            data.setValueFormatter(new LargeValueFormatter());
+            data.setValueTextSize(11f);
+            data.setValueTextColor(Color.WHITE);
+            pieChartTasks.setData(data);
+
+            // undo all highlights
+            pieChartTasks.highlightValues(null);
+
+            pieChartTasks.invalidate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setPieChartOfUser() {
+        try {
+            pieChartUsers.setUsePercentValues(false);
+            pieChartUsers.setDrawEntryLabels(false);
+            pieChartUsers.getDescription().setEnabled(false);
+            pieChartUsers.setExtraOffsets(0, 0, 0, 10);
+
+            pieChartUsers.setDragDecelerationFrictionCoef(0.95f);
+
+            pieChartUsers.setDrawHoleEnabled(false);
+
+            pieChartUsers.setTransparentCircleColor(Color.WHITE);
+            pieChartUsers.setTransparentCircleAlpha(110);
+
+            pieChartUsers.setHoleRadius(58f);
+            pieChartUsers.setTransparentCircleRadius(61f);
+
+            pieChartUsers.setDrawCenterText(false);
+
+            pieChartUsers.setRotationAngle(0);
+            // enable rotation of the chart by touch
+            pieChartUsers.setRotationEnabled(true);
+            pieChartUsers.setHighlightPerTapEnabled(true);
+
+            pieChartUsers.animateY(500, Easing.EaseInOutQuad);
+            // pieChartUsers.spin(2000, 0, 360);
+
+            Legend l = pieChartUsers.getLegend();
+            l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+            l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+            l.setOrientation(Legend.LegendOrientation.VERTICAL);
+            l.setDrawInside(false);
+            l.setXEntrySpace(0f);
+            l.setYEntrySpace(0f);
+            l.setYOffset(0f);
+            l.setXOffset(0f);
+            l.setTextSize(8f);
+
+            // entry label styling
+            pieChartUsers.setEntryLabelColor(Color.WHITE);
+            pieChartUsers.setEntryLabelTextSize(12f);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void setPieChartOfTasks() {
+        try {
+            pieChartTasks.setUsePercentValues(false);
+            pieChartTasks.setDrawEntryLabels(false);
+            pieChartTasks.getDescription().setEnabled(false);
+            pieChartTasks.setExtraOffsets(0, 0, 0, 10);
+
+            pieChartTasks.setDragDecelerationFrictionCoef(0.95f);
+
+            pieChartTasks.setDrawHoleEnabled(false);
+
+            pieChartTasks.setTransparentCircleColor(Color.WHITE);
+            pieChartTasks.setTransparentCircleAlpha(110);
+
+            pieChartTasks.setHoleRadius(58f);
+            pieChartTasks.setTransparentCircleRadius(61f);
+
+            pieChartTasks.setDrawCenterText(false);
+
+            pieChartTasks.setRotationAngle(0);
+            // enable rotation of the chart by touch
+            pieChartTasks.setRotationEnabled(true);
+            pieChartTasks.setHighlightPerTapEnabled(true);
+
+            pieChartTasks.animateY(500, Easing.EaseInOutQuad);
+            // pieChartTasks.spin(2000, 0, 360);
+
+            Legend l = pieChartTasks.getLegend();
+            l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+            l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+            l.setOrientation(Legend.LegendOrientation.VERTICAL);
+            l.setDrawInside(false);
+            l.setXEntrySpace(0f);
+            l.setYEntrySpace(0f);
+            l.setYOffset(0f);
+            l.setXOffset(0f);
+            l.setTextSize(8f);
+
+            // entry label styling
+            pieChartTasks.setEntryLabelColor(Color.WHITE);
+            pieChartTasks.setEntryLabelTextSize(12f);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

@@ -90,7 +90,7 @@
                 android:layout_below="@+id/edit_mobile_phone"
                 android:layout_marginStart="@dimen/medium_margin"
                 android:layout_marginTop="@dimen/large_margin"
-                android:text="M-Pin (4 Digits)"
+                android:text="M-Pin (4 Digit Number)"
                 android:textColor="@color/colorSecondaryText"
                 android:textStyle="bold" />
 
@@ -115,9 +115,10 @@
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/text_border"
                     android:gravity="start|center"
-                    android:hint="Enter mPin (4 Digits)"
+                    android:hint="Enter mPin (4 digit number)"
                     android:imeOptions="actionDone"
-                    android:inputType="number"
+                    android:inputType="textPassword"
+                    android:digits="0123456789"
                     android:paddingStart="@dimen/std_10_dp"
                     android:paddingEnd="@dimen/std_10_dp"
                     android:paddingRight="@dimen/std_10_dp"

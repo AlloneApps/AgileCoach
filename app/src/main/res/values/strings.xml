@@ -29,4 +29,9 @@
     <string name="enter_password_alert">Please enter password</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="tasks_with_space">Tasks \u0020\u0020</string>
+    <string name="bugs_with_space">Bugs \u0020\u0020</string>
+    <string name="active_with_space">Active \u0020\u0020</string>
+    <string name="inActive_with_space">InActive \u0020\u0020</string>
 </resources>
