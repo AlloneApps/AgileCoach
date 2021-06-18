@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -37,8 +38,12 @@ import com.task.agilecoach.views.dashboard.AdminDashboard;
 import com.task.agilecoach.views.dashboard.UserDashboard;
 import com.task.agilecoach.views.login.LoginActivity;
 import com.task.agilecoach.views.myTasks.MyTasks;
+import com.task.agilecoach.views.profile.Profile;
+import com.task.agilecoach.views.updateMpin.UpdateMPin;
 
 import org.jetbrains.annotations.NotNull;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageView menuIcon;
     private TextView navUserName, navUserId;
     private TextView textTitle;
+    private CircleImageView navImageUser;
     private View navHeader;
     private FragmentManager fragmentManager;
 
@@ -65,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             TextView title = appBarLayout.findViewById(R.id.title);
             textTitle = findViewById(R.id.title_header);
             textTitle.setVisibility(View.VISIBLE);
-            
+
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
                 @Override
@@ -112,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navHeader = navigationView.getHeaderView(0);
             navUserName = navHeader.findViewById(R.id.text_user_name);
             navUserId = navHeader.findViewById(R.id.text_user_id);
+            navImageUser = navHeader.findViewById(R.id.image_user_avatar);
 
 
             if (loginUser != null) {
@@ -122,9 +129,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     userName = loginUser.getFirstName() + " " + loginUser.getLastName() + " (" + loginUser.getRole() + ")";
                 }
-
                 navUserName.setText(userName);
                 navUserId.setText(loginUser.getEmailId());
+
+                setProfileAvatar(loginUser);
             }
 
             TextView textVersion = findViewById(R.id.internal_version);
@@ -157,15 +165,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void setTitle(String titleName){
+    public void setTitle(String titleName) {
         try {
-            Log.d(TAG, "setTitle: titleName: "+titleName);
+            Log.d(TAG, "setTitle: titleName: " + titleName);
             if (textTitle != null) {
                 textTitle.setVisibility(View.VISIBLE);
                 Log.d(TAG, "setTitle: title setted");
                 textTitle.setText(titleName);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setProfileAvatar(User user) {
+        try {
+            if (user != null && navImageUser != null) {
+                if (user.getGender().equals(AppConstants.FEMALE_GENDER)) {
+                    navImageUser.setImageDrawable(AppCompatResources.getDrawable(MainActivity.this, R.drawable.ic_female_avatar));
+                } else {
+                    navImageUser.setImageDrawable(AppCompatResources.getDrawable(MainActivity.this, R.drawable.ic_male_avatar));
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -210,6 +232,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new MyTasks(), Integer.toString(getFragmentCount())).commit();
             } else if (id == R.id.nav_all_users) {
                 fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new AllUsers(), Integer.toString(getFragmentCount())).commit();
+            } else if (id == R.id.nav_profile) {
+                fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new Profile(), Integer.toString(getFragmentCount())).commit();
+            } else if (id == R.id.nav_update_mpin) {
+                fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new UpdateMPin(), Integer.toString(getFragmentCount())).commit();
             }
             DrawerLayout drawer = findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
@@ -247,6 +273,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new AdminDashboard(),
                         Integer.toString(getFragmentCount())).commit();
             } else if (fragment instanceof MyTasks) {
+                fragmentManager.popBackStack();
+                fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new UserDashboard(),
+                        Integer.toString(getFragmentCount())).commit();
+            } else if (fragment instanceof Profile) {
+                fragmentManager.popBackStack();
+                fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new UserDashboard(),
+                        Integer.toString(getFragmentCount())).commit();
+            } else if (fragment instanceof UpdateMPin) {
                 fragmentManager.popBackStack();
                 fragmentManager.beginTransaction().replace(R.id.frame_layout_main, new UserDashboard(),
                         Integer.toString(getFragmentCount())).commit();

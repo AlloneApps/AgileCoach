@@ -8,6 +8,7 @@ public class TasksSubDetails implements Parcelable {
     private String taskStatus;
     private String taskUserAssigned;
     private String taskUserId;
+    private String taskUserGender;
     private String modifiedOn;
     private String modifiedBy;
 
@@ -19,6 +20,7 @@ public class TasksSubDetails implements Parcelable {
         taskStatus = in.readString();
         taskUserAssigned = in.readString();
         taskUserId = in.readString();
+        taskUserGender = in.readString();
         modifiedOn = in.readString();
         modifiedBy = in.readString();
     }
@@ -67,6 +69,14 @@ public class TasksSubDetails implements Parcelable {
         this.taskUserId = taskUserId;
     }
 
+    public String getTaskUserGender() {
+        return taskUserGender;
+    }
+
+    public void setTaskUserGender(String taskUserGender) {
+        this.taskUserGender = taskUserGender;
+    }
+
     public String getModifiedOn() {
         return modifiedOn;
     }
@@ -90,6 +100,7 @@ public class TasksSubDetails implements Parcelable {
                 ", taskStatus='" + taskStatus + '\'' +
                 ", taskUserAssigned='" + taskUserAssigned + '\'' +
                 ", taskUserId='" + taskUserId + '\'' +
+                ", taskUserGender='" + taskUserGender + '\'' +
                 ", modifiedOn='" + modifiedOn + '\'' +
                 ", modifiedBy='" + modifiedBy + '\'' +
                 '}';
@@ -106,6 +117,7 @@ public class TasksSubDetails implements Parcelable {
         parcel.writeString(taskStatus);
         parcel.writeString(taskUserAssigned);
         parcel.writeString(taskUserId);
+        parcel.writeString(taskUserGender);
         parcel.writeString(modifiedOn);
         parcel.writeString(modifiedBy);
     }

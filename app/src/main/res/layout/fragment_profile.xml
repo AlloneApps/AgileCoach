@@ -1,139 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/driver_signup_coordinator_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:background="@android:color/transparent"
-        android:backgroundTint="@color/colorAccent"
-        android:elevation="5dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="SignUp"
-            android:textColor="@color/colorNewUxBlue"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-    </androidx.appcompat.widget.Toolbar>
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:id="@+id/user_profile_coordinator_layout"
+android:layout_width="match_parent"
+android:background="@color/colorWhite"
+android:layout_marginTop="?attr/actionBarSize"
+android:layout_height="match_parent">
 
     <ScrollView
-        android:id="@+id/driver_signup_scroll_view"
+        android:id="@+id/user_profile_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
         android:fillViewport="false"
         android:scrollbarStyle="insideOverlay">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/relative_horizontal_padding"
-            android:paddingLeft="@dimen/relative_horizontal_padding"
+            android:layout_marginTop="10dp"
+            android:paddingBottom="@dimen/relative_vertical_padding"
             android:paddingEnd="@dimen/relative_horizontal_padding"
+            android:paddingLeft="@dimen/relative_horizontal_padding"
             android:paddingRight="@dimen/relative_horizontal_padding"
-            android:paddingBottom="@dimen/relative_vertical_padding">
+            android:paddingStart="@dimen/relative_horizontal_padding">
 
-            <TextView
-                android:id="@+id/text_email_password"
-                style="@style/AppTheme.Header"
-                android:layout_width="match_parent"
-                android:textStyle="bold"
+            <RelativeLayout
+                android:id="@+id/image_driver_layout"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Login Info" />
+                android:layout_centerHorizontal="true">
 
-            <TextView
-                android:id="@+id/text_mobile_number_header"
-                style="@style/AppTheme.Header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/text_email_password"
-                android:layout_marginStart="@dimen/medium_margin"
-                android:layout_marginTop="@dimen/large_margin"
-                android:text="Mobile Number"
-                android:textColor="@color/colorSecondaryText"
-                android:textStyle="bold" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/image_user"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:contentDescription="User image"
+                    android:src="@drawable/ic_male_avatar"
+                    app:civ_border_color="@color/colorNewUxBlue"
+                    app:civ_border_width="1dp" />
 
-            <EditText
-                android:id="@+id/edit_mobile_phone"
-                style="@style/AppTheme.Input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/text_mobile_number_header"
-                android:layout_marginStart="@dimen/medium_margin"
-                android:layout_marginTop="@dimen/large_margin"
-                android:layout_marginEnd="@dimen/medium_margin"
-                android:background="@drawable/text_border"
-                android:hint="Enter mobile Number"
-                android:imeOptions="actionNext"
-                android:inputType="number"
-                android:nextFocusDown="@+id/edit_dob"
-                android:textColor="@color/colorBlack"
-                android:textCursorDrawable="@null" />
+            </RelativeLayout>
 
-            <TextView
-                android:id="@+id/text_mPin_header"
-                style="@style/AppTheme.Header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/edit_mobile_phone"
-                android:layout_marginStart="@dimen/medium_margin"
-                android:layout_marginTop="@dimen/large_margin"
-                android:text="M-Pin (4 Digit Number)"
-                android:textColor="@color/colorSecondaryText"
-                android:textStyle="bold" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/edit_mpin_layout"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/std_40_dp"
-                android:layout_below="@+id/text_mPin_header"
-                android:layout_marginTop="@dimen/std_16_dp"
-                app:hintEnabled="false"
-                app:passwordToggleDrawable="@drawable/password_visibility_toggle"
-                app:passwordToggleEnabled="true"
-                app:passwordToggleTint="@color/colorNewUxLightGray">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_mPin"
-                    style="@style/AppTheme.TILEditText1"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/std_40_dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/text_border"
-                    android:gravity="start|center"
-                    android:hint="Enter mPin (4 digit number)"
-                    android:imeOptions="actionDone"
-                    android:inputType="textPassword"
-                    android:digits="0123456789"
-                    android:paddingStart="@dimen/std_10_dp"
-                    android:paddingEnd="@dimen/std_10_dp"
-                    android:paddingRight="@dimen/std_10_dp"
-                    android:textColor="@color/colorBlack" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
+              <TextView
                 android:id="@+id/text_personal_info"
                 style="@style/AppTheme.Header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/edit_mpin_layout"
+                  android:textStyle="bold"
+                android:layout_below="@+id/image_driver_layout"
                 android:layout_marginTop="@dimen/extra_large_margin"
-                android:textStyle="bold"
                 android:text="Personal Info" />
 
             <TextView
@@ -273,12 +188,12 @@
                 android:drawableEnd="@drawable/ic_drop_down"
                 android:background="@drawable/text_border"
                 android:hint="Select gender"
-                android:nextFocusDown="@+id/btn_signup"
+                android:nextFocusDown="@+id/btn_update"
                 android:textColor="@color/colorBlack"
                 android:textCursorDrawable="@null" />
 
             <Button
-                android:id="@+id/btn_signup"
+                android:id="@+id/btn_update"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/text_gender"
@@ -287,7 +202,7 @@
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/button_all_radius_rounded_deep_corner"
                 android:gravity="center"
-                android:text="SignUp"
+                android:text="Update"
                 android:textAllCaps="true"
                 android:textColor="@color/colorWhite"
                 android:textSize="@dimen/std_18_sp"

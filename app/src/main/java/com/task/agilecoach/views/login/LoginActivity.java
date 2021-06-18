@@ -159,6 +159,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (userMobileNumber.equals(mobileNumber) && mobilePin.equals(mPin)) {
                                 MyTasksToast.showSuccessToastWithBottom(context, "Login success", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
 
+                                String mPin = snapshot.child(FireBaseDatabaseConstants.M_PIN).getValue(String.class);
                                 String firstName = snapshot.child(FireBaseDatabaseConstants.FIRST_NAME).getValue(String.class);
                                 String lastName = snapshot.child(FireBaseDatabaseConstants.LAST_NAME).getValue(String.class);
                                 String email_id = snapshot.child(FireBaseDatabaseConstants.EMAIL_ID).getValue(String.class);
@@ -173,6 +174,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                 User user = new User();
                                 user.setMobileNumber(mobileNumber);
+                                user.setmPin(mPin);
                                 user.setFirstName(firstName);
                                 user.setLastName(lastName);
                                 user.setEmailId(email_id);

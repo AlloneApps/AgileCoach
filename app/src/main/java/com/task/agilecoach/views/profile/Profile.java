@@ -1,13 +1,11 @@
-package com.task.agilecoach.views.signup;
+package com.task.agilecoach.views.profile;
 
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.InputFilter;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,16 +17,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.jakewharton.rxbinding.view.RxView;
 import com.task.agilecoach.R;
 import com.task.agilecoach.helpers.AppConstants;
@@ -37,8 +32,7 @@ import com.task.agilecoach.helpers.Utils;
 import com.task.agilecoach.helpers.dataUtils.DataUtils;
 import com.task.agilecoach.helpers.myTaskToast.MyTasksToast;
 import com.task.agilecoach.model.User;
-
-import org.jetbrains.annotations.NotNull;
+import com.task.agilecoach.views.main.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -46,13 +40,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class SignupActivity extends AppCompatActivity {
+import de.hdodenhof.circleimageview.CircleImageView;
 
-    private static final String TAG = "SignupActivity";
-    private EditText editEmailId, editFirstName, editLastName, editMobileNumber, editDob;
-    private TextInputEditText mPin;
+public class Profile extends Fragment {
+    private static final String TAG = "Profile";
+    private View rootView;
+    private CircleImageView imageUser;
+
+    private EditText editEmailId, editFirstName, editLastName, editDob;
     private TextView textGender;
-    private Button btnSignup;
+    private Button btnUpdate;
     private final Calendar calendar = Calendar.getInstance();
     final DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
         calendar.set(Calendar.YEAR, year);
@@ -68,12 +65,39 @@ public class SignupActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     private DatabaseReference mUserReference;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
 
-        progressDialog = new ProgressDialog(SignupActivity.this);
+    public Profile() {
+        // Required empty public constructor
+    }
+
+
+    public static Profile createInstance(Bundle bundle) {
+        Profile fragment = new Profile();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ((MainActivity) requireActivity()).setTitle("Profile");
+
+        progressDialog = new ProgressDialog(requireContext());
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         mUserReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
@@ -82,20 +106,16 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void setUpViews() {
-        editMobileNumber = findViewById(R.id.edit_mobile_phone);
-        mPin = findViewById(R.id.edit_mPin);
+        imageUser = rootView.findViewById(R.id.image_user);
 
-        editFirstName = findViewById(R.id.edit_first_name);
-        editLastName = findViewById(R.id.edit_last_name);
+        editFirstName = rootView.findViewById(R.id.edit_first_name);
+        editLastName = rootView.findViewById(R.id.edit_last_name);
 
-        editEmailId = findViewById(R.id.edit_email);
-        editDob = findViewById(R.id.edit_dob);
-        textGender = findViewById(R.id.text_gender);
+        editEmailId = rootView.findViewById(R.id.edit_email);
+        editDob = rootView.findViewById(R.id.edit_dob);
+        textGender = rootView.findViewById(R.id.text_gender);
 
-        btnSignup = findViewById(R.id.btn_signup);
-
-        editMobileNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
-        mPin.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
+        btnUpdate = rootView.findViewById(R.id.btn_update);
 
         editDob.setKeyListener(null);
 
@@ -109,10 +129,10 @@ public class SignupActivity extends AppCompatActivity {
         RxView.touches(textGender).subscribe(motionEvent -> {
             try {
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(SignupActivity.this);
+                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(requireContext());
                     builderSingle.setTitle("Select Gender");
 
-                    final ArrayAdapter<String> genderTypeSelectionAdapter = new ArrayAdapter<String>(SignupActivity.this,
+                    final ArrayAdapter<String> genderTypeSelectionAdapter = new ArrayAdapter<String>(requireContext(),
                             android.R.layout.select_dialog_singlechoice, genderTypeList) {
                         @NonNull
                         @Override
@@ -136,13 +156,18 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
-        btnSignup.setOnClickListener(new View.OnClickListener() {
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (validateFields()) {
+
+                    User loginUser = Utils.getLoginUserDetails(requireContext());
+
+                    Log.d(TAG, "onClick: loginUser: " + loginUser);
                     User user = new User();
-                    user.setMobileNumber(Utils.getFieldValue(editMobileNumber));
-                    user.setmPin(Utils.getFieldValue(mPin));
+                    user.setMobileNumber(loginUser.getMobileNumber());
+                    user.setmPin(loginUser.getmPin());
+
                     user.setFirstName(Utils.getFieldValue(editFirstName));
                     user.setLastName(Utils.getFieldValue(editLastName));
                     user.setEmailId(Utils.getFieldValue(editEmailId));
@@ -151,53 +176,60 @@ public class SignupActivity extends AppCompatActivity {
                     user.setRole(AppConstants.User_ROLE);
                     user.setActive(true);
 
-                    boolean isNotExistUser = verifyUserRegistration(SignupActivity.this, user);
-                    Log.d(TAG, "onClick: isNotExistUser:" + isNotExistUser);
-                    if (isNotExistUser) {
+                    if (isAnyUpdate(user)) {
                         showProgressDialog("Processing please wait.");
-                        signUpNewUser(SignupActivity.this, user);
+                        updateUserDetails(user);
                     } else {
-                        MyTasksToast.showErrorToastWithBottom(SignupActivity.this, "Mobile number already exists", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                        MyTasksToast.showInfoToast(requireContext(), "Nothing to update.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
                     }
                 }
             }
         });
+
+        User loginUser = Utils.getLoginUserDetails(requireContext());
+        Log.d(TAG, "setUpViews: loginUser: "+loginUser);
+        updateUserDetailsToView(loginUser);
+
     }
 
-    public void navigateToLogin() {
-        try {
-            Intent intent = new Intent();
-            this.setResult(RESULT_OK, intent);
-            this.finish();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private boolean isAnyUpdate(User editedUserDetails) {
+        User user = Utils.getLoginUserDetails(requireContext());
+
+        if (user != null) {
+            if (!(user.getFirstName().equals(editedUserDetails.getFirstName()))) {
+                return true;
+            } else if (!(user.getLastName().equals(editedUserDetails.getLastName()))) {
+                return true;
+            } else if (!(user.getEmailId().equals(editedUserDetails.getEmailId()))) {
+                return true;
+            } else if (!(user.getDateOfBirth().equals(editedUserDetails.getDateOfBirth()))) {
+                return true;
+            } else if (!(user.getGender().equals(editedUserDetails.getGender()))) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
         }
     }
 
     private boolean validateFields() {
-        if (Utils.isEmptyField(editMobileNumber.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(SignupActivity.this, "Please enter mobile number.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (Utils.isEmptyField(mPin.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(SignupActivity.this, "Please enter your mPin.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (mPin.getText().toString().trim().length() > 4 || mPin.getText().toString().trim().length() < 4) {
-            MyTasksToast.showErrorToastWithBottom(SignupActivity.this, "mPin must be four digits", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (Utils.isEmptyField(editFirstName.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(SignupActivity.this, "Please enter first name.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+        if (Utils.isEmptyField(editFirstName.getText().toString().trim())) {
+            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter first name.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
             return false;
         } else if (Utils.isEmptyField(editLastName.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(SignupActivity.this, "Please enter last name.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter last name.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
             return false;
         } else if (Utils.isEmptyField(editEmailId.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(SignupActivity.this, "Please enter email id.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter email id.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
             return false;
         } else if (Utils.isEmptyField(editDob.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(SignupActivity.this, "Please enter date of birth.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter date of birth.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
             return false;
         } else if (Utils.isEmptyField(textGender.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(SignupActivity.this, "Please enter gender.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter gender.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
             return false;
         }
         return true;
@@ -205,7 +237,7 @@ public class SignupActivity extends AppCompatActivity {
 
     private DatePickerDialog showDatePicker() {
         try {
-            DatePickerDialog datePickerDialog = new DatePickerDialog(SignupActivity.this, date, calendar
+            DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), date, calendar
                     .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                     calendar.get(Calendar.DAY_OF_MONTH));
             datePickerDialog.getDatePicker().setMaxDate(new Date().getTime());
@@ -231,68 +263,60 @@ public class SignupActivity extends AppCompatActivity {
         }
     }
 
-    public void signUpNewUser(Context context, User user) {
+    public void updateUserDetails(User user) {
         try {
             mUserReference.child(user.getMobileNumber()).setValue(user)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            // Write was successful!
-                            // ...
                             hideProgressDialog();
-                            MyTasksToast.showSuccessToastWithBottom(SignupActivity.this, "User created successfully", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-                            navigateToLogin();
+
+                            Utils.saveLoginUserDetails(requireContext(), user);
+
+                            Log.d(TAG, "onSuccess: loginUserUpdate: "+Utils.getLoginUserDetails(requireContext()));
+
+                            MyTasksToast.showSuccessToastWithBottom(requireContext(), "User details updated successfully", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+
+                            updateUserDetailsToView(user);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            // Write failed
-                            // ...
                             hideProgressDialog();
-                            MyTasksToast.showErrorToastWithBottom(SignupActivity.this, "Failed to register", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                            MyTasksToast.showErrorToastWithBottom(requireContext(), "Failed to update details", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
                         }
                     });
         } catch (Exception e) {
             hideProgressDialog();
-            MyTasksToast.showErrorToastWithBottom(SignupActivity.this, e.getMessage(), MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+            MyTasksToast.showErrorToastWithBottom(requireContext(), e.getMessage(), MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
             e.printStackTrace();
         }
     }
 
-    public boolean verifyUserRegistration(Context context, User user) {
-        final boolean[] returnValue = {true};
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
+    private void updateUserDetailsToView(User user) {
+        try {
+            if (user != null) {
+                editFirstName.setText(user.getFirstName());
+                editLastName.setText(user.getLastName());
+                editEmailId.setText(user.getEmailId());
+                editDob.setText(user.getDateOfBirth());
+                textGender.setText(user.getGender());
 
-        databaseReference.child(user.getMobileNumber()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    String mobileNumber = snapshot.child(FireBaseDatabaseConstants.MOBILE_NUMBER).getValue(String.class);
-                    Log.d(TAG, "onDataChange: userMobileNumber: " + user.getMobileNumber());
-                    Log.d(TAG, "onDataChange: mobileNumber: " + mobileNumber);
-                    if (mobileNumber != null) {
-                        if (mobileNumber.equals(user.getMobileNumber())) {
-                            returnValue[0] = false;
-                        } else {
-                            returnValue[0] = true;
-                        }
-                    } else {
-                        returnValue[0] = true;
-                    }
+                Log.d(TAG, "updateUserDetailsToView: userGender: "+user.getGender());
+
+                if (user.getGender().equals(AppConstants.FEMALE_GENDER)) {
+                    imageUser.setImageDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.ic_female_avatar));
                 } else {
-                    returnValue[0] = true;
-                    Log.d(TAG, "onDataChange: snapchat not exists");
+                    imageUser.setImageDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.ic_male_avatar));
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                returnValue[0] = true;
-                Log.d(TAG, "onCancelled: error: " + error.getMessage());
+                ((MainActivity) requireActivity()).setProfileAvatar(user);
             }
-        });
-        return returnValue[0];
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void showProgressDialog(String message) {

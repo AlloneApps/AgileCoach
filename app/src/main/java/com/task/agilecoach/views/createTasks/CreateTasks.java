@@ -147,11 +147,13 @@ public class CreateTasks extends Fragment {
 
                     tasksSubDetails.setTaskUserAssigned(textAssignedUser.getText().toString().trim());
 
+
                     User userSelected = userDetailsMap.get(textAssignedUser.getText().toString().trim());
 
                     if (userSelected != null) {
                         String userId = userSelected.getMobileNumber();
                         tasksSubDetails.setTaskUserId(userId);
+                        tasksSubDetails.setTaskUserGender(userSelected.getGender());
                     }
 
                     if (user != null) {

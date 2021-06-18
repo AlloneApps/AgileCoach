@@ -2,32 +2,41 @@ package com.task.agilecoach.views.myTasks;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.jakewharton.rxbinding.view.RxView;
 import com.task.agilecoach.R;
+import com.task.agilecoach.helpers.AppConstants;
 import com.task.agilecoach.helpers.FireBaseDatabaseConstants;
 import com.task.agilecoach.helpers.Utils;
 import com.task.agilecoach.helpers.dataUtils.DataUtils;
 import com.task.agilecoach.helpers.myTaskToast.MyTasksToast;
 import com.task.agilecoach.model.TaskMaster;
+import com.task.agilecoach.model.TasksSubDetails;
 import com.task.agilecoach.model.User;
 import com.task.agilecoach.views.main.MainActivity;
 
@@ -35,6 +44,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClickListener {
 
@@ -176,7 +186,7 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
 
     @Override
     public void changeStatus(int position, TaskMaster taskMaster) {
-        MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+        showDialogForTaskStatusUpdate(requireContext(), position, taskMaster);
     }
 
     @Override
@@ -271,6 +281,168 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
                 progressDialog.dismiss();
             }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showDialogForTaskStatusUpdate(Context context, int position, TaskMaster taskMaster) {
+        try {
+            String lastStatus = "";
+            String assignedTo = "";
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            LayoutInflater inflater = this.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_task_user_update, null);
+            builder.setView(dialogView);
+            builder.setCancelable(false);
+
+            // TextView and EditText Initialization
+            TextView textMainHeader = dialogView.findViewById(R.id.text_task_admin_update_main_header);
+            TextView textTaskStatusHeader = dialogView.findViewById(R.id.text_task_status_header);
+            TextView textTaskStatusValue = dialogView.findViewById(R.id.text_task_status_value);
+
+            //Button Initialization
+            Button btnUpdate = dialogView.findViewById(R.id.btn_update);
+            Button btnClose = dialogView.findViewById(R.id.btn_close);
+
+            List<String> taskStatusList = DataUtils.getTaskStatusStringList(requireContext());
+
+            RxView.touches(textTaskStatusValue).subscribe(motionEvent -> {
+                try {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                        AlertDialog.Builder builderSingle = new AlertDialog.Builder(requireContext());
+                        builderSingle.setTitle("Task Status");
+
+                        final ArrayAdapter<String> taskStatusSelectionAdapter = new ArrayAdapter<String>(requireContext(),
+                                android.R.layout.select_dialog_singlechoice, taskStatusList) {
+                            @NonNull
+                            @Override
+                            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                View view = super.getView(position, convertView, parent);
+                                TextView text = view.findViewById(android.R.id.text1);
+                                text.setTextColor(Color.BLACK);
+                                return view;
+                            }
+                        };
+
+                        builderSingle.setNegativeButton("Cancel", (dialog, subPosition) -> dialog.dismiss());
+
+                        builderSingle.setAdapter(taskStatusSelectionAdapter, (dialog, subPosition) -> {
+                            textTaskStatusValue.setText(taskStatusSelectionAdapter.getItem(subPosition));
+                        });
+                        builderSingle.show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            String headerMessage = taskMaster.getTaskType() + " : " + taskMaster.getTaskMasterId();
+            textMainHeader.setText(headerMessage);
+
+            if (taskMaster.getTaskType().equals(AppConstants.BUG_TYPE)) {
+                textMainHeader.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_task_or_bug_red, 0, 0, 0);
+                textMainHeader.setCompoundDrawablePadding((int) context.getResources().getDimension(R.dimen.std_10_dp));
+                textMainHeader.setTextColor(context.getResources().getColor(R.color.error_color, null));
+            } else {
+                textMainHeader.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_task_or_bug_green, 0, 0, 0);
+                textMainHeader.setCompoundDrawablePadding((int) context.getResources().getDimension(R.dimen.std_10_dp));
+                textMainHeader.setTextColor(context.getResources().getColor(R.color.success_color, null));
+            }
+
+            textTaskStatusHeader.setText("Task Status");
+
+            int lastPosition = (taskMaster.getTasksSubDetailsList().size() - 1);
+            Log.d(TAG, "showAlertForUpdateBankDetails: lastPosition: " + lastPosition);
+
+            if (lastPosition >= 0) {
+                lastStatus = taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskStatus();
+                Log.d(TAG, "showAlertForUpdateBankDetails: lastStatus: " + lastStatus);
+                textTaskStatusValue.setText(lastStatus);
+            }
+
+            AlertDialog alert = builder.create();
+            alert.show();
+
+            String finalLastStatus = lastStatus;
+            btnUpdate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        if (!(finalLastStatus.equalsIgnoreCase(textTaskStatusValue.getText().toString().trim()))) {
+                            User loginUser = Utils.getLoginUserDetails(requireContext());
+
+                            TasksSubDetails tasksSubDetails = new TasksSubDetails();
+                            tasksSubDetails.setTaskId(taskMaster.getTaskMasterId());
+                            tasksSubDetails.setModifiedBy(loginUser.getEmailId());
+                            tasksSubDetails.setModifiedOn(Utils.getCurrentTimeStampWithSeconds());
+
+                            tasksSubDetails.setTaskStatus(textTaskStatusValue.getText().toString().trim());
+                            String taskAssignedName = loginUser.getFirstName()+" "+loginUser.getLastName();
+                            tasksSubDetails.setTaskUserAssigned(taskAssignedName);
+                            String taskUserId = Objects.requireNonNull(loginUser.getMobileNumber());
+                            String taskUserGender = Objects.requireNonNull(loginUser.getGender());
+                            tasksSubDetails.setTaskUserId(taskUserId);
+                            tasksSubDetails.setTaskUserGender(taskUserGender);
+
+                            taskMaster.getTasksSubDetailsList().add(tasksSubDetails);
+
+                            updateTaskOrBug(position, taskMaster,alert);
+                        } else {
+                            MyTasksToast.showInfoToast(requireContext(), "Nothing to Update.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            btnClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        alert.dismiss();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void updateTaskOrBug(int position, TaskMaster taskMaster, AlertDialog alert) {
+        try {
+            showProgressDialog("Processing your request.");
+
+            Log.d(TAG, "updateTaskOrBug: taskMaster: " + taskMaster);
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.TASK_LIST_TABLE);
+
+            databaseReference.child(taskMaster.getTaskMasterId()).setValue(taskMaster)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            hideProgressDialog();
+                            MyTasksToast.showSuccessToastWithBottom(requireContext(), taskMaster.getTaskType() + " details updated successfully", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                            if (alert != null) {
+                                alert.dismiss();
+                            }
+                            myTasksAdapter.notifyItemChanged(position);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            hideProgressDialog();
+                            MyTasksToast.showErrorToastWithBottom(requireContext(), "Failed to update " + taskMaster.getTaskType() + " details, Try again.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                        }
+                    });
+        } catch (Exception e) {
+            hideProgressDialog();
+            MyTasksToast.showErrorToastWithBottom(requireContext(), e.getMessage(), MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
             e.printStackTrace();
         }
     }

@@ -304,8 +304,12 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
                             tasksSubDetails.setTaskStatus(textTaskStatusValue.getText().toString().trim());
                             tasksSubDetails.setTaskUserAssigned(textAssignToValue.getText().toString().trim());
 
+                            tasksSubDetails.setTaskUserAssigned(textAssignToValue.getText().toString().trim());
+
                             String taskUserId = Objects.requireNonNull(userHashMap.get(textAssignToValue.getText().toString().trim())).getMobileNumber();
+                            String taskUserGender = Objects.requireNonNull(userHashMap.get(textAssignToValue.getText().toString().trim())).getGender();
                             tasksSubDetails.setTaskUserId(taskUserId);
+                            tasksSubDetails.setTaskUserGender(taskUserGender);
 
                             taskMaster.getTasksSubDetailsList().add(tasksSubDetails);
 

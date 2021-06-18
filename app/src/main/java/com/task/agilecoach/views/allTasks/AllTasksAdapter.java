@@ -66,16 +66,6 @@ public class AllTasksAdapter extends RecyclerView.Adapter<AllTasksAdapter.AllTas
 
                 User loginUser = Utils.getLoginUserDetails(context);
 
-                if (loginUser != null) {
-                    if (loginUser.getGender().equals(AppConstants.MALE_GENDER)) {
-                        holder.imageUserAvatar.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_male_avatar));
-                    } else if (loginUser.getGender().equals(AppConstants.FEMALE_GENDER)) {
-                        holder.imageUserAvatar.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_female_avatar));
-                    } else {
-                        holder.imageUserAvatar.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_male_avatar));
-                    }
-                }
-
                 String taskNumber = taskMaster.getTaskMasterId();
                 holder.textTaskNumber.setText(taskNumber);
 
@@ -105,6 +95,20 @@ public class AllTasksAdapter extends RecyclerView.Adapter<AllTasksAdapter.AllTas
 
                     String assignedTo = taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserAssigned();
                     holder.textAssignTo.setText(assignedTo);
+
+                    String taskUserGender = taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserGender();
+                    if (taskUserGender != null) {
+                        if (taskUserGender.equals(AppConstants.MALE_GENDER)) {
+                            holder.imageUserAvatar.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_male_avatar));
+                        } else if (taskUserGender.equals(AppConstants.FEMALE_GENDER)) {
+                            holder.imageUserAvatar.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_female_avatar));
+                        } else {
+                            holder.imageUserAvatar.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_male_avatar));
+                        }
+                    }else{
+                        holder.imageUserAvatar.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_male_avatar));
+                    }
+
                 }
 
                 holder.textView.setOnClickListener(new View.OnClickListener() {

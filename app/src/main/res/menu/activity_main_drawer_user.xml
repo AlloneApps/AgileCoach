@@ -8,5 +8,13 @@
             android:id="@+id/nav_my_tasks"
             android:icon="@drawable/ic_task_calender"
             android:title="My Tasks" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_person_profile"
+            android:title="Profile" />
+        <item
+            android:id="@+id/nav_update_mpin"
+            android:icon="@drawable/ic_keyboard"
+            android:title="Update mPin" />
     </group>
 </menu>
