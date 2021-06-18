@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
@@ -153,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (drawer != null) {
                         drawer.closeDrawer(GravityCompat.START);
                     }
-                    logout();
+                    showAlertDialogForLogout();
                 } else {
                     MyTasksToast.showErrorToastWithBottom(MainActivity.this, "No Internet Connection.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
                 }
@@ -170,6 +172,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void showAlertDialogForLogout() {
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            LayoutInflater inflater = this.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.alert_dialog_with_two_buttons, null);
+            builder.setView(dialogView);
+            builder.setCancelable(false);
+
+            // TextView and EditText Initialization
+            TextView textAlertHeader = dialogView.findViewById(R.id.dialog_message_header);
+            TextView textAlertDesc = dialogView.findViewById(R.id.dialog_message_desc);
+
+            TextView textBtnNo = dialogView.findViewById(R.id.text_button_left);
+            TextView textBtnYes = dialogView.findViewById(R.id.text_button_right);
+
+            textAlertHeader.setText("Alert..!");
+            String logoutSureMessage = "Are you sure want to logout from app?";
+
+            textAlertDesc.setText(logoutSureMessage);
+            textBtnNo.setText("No");
+            textBtnYes.setText("Yes");
+
+            AlertDialog alert = builder.create();
+            alert.show();
+
+            textBtnYes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        alert.dismiss();
+                        logout();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            textBtnNo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        alert.dismiss();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void verifyUserActiveStatus(User user) {
