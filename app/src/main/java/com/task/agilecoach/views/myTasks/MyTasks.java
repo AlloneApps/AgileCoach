@@ -40,8 +40,6 @@ import com.task.agilecoach.model.TasksSubDetails;
 import com.task.agilecoach.model.User;
 import com.task.agilecoach.views.main.MainActivity;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -92,44 +90,35 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
             ((MainActivity) requireActivity()).setTitle("My Tasks");
             progressDialog = new ProgressDialog(requireContext());
 
+            User loginUser = Utils.getLoginUserDetails(requireContext());
+
+            loadMyTasksList(loginUser);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        User loginUser = Utils.getLoginUserDetails(requireContext());
-
-        loadMyTasksList(loginUser);
-
-//        setUpViews();
     }
 
     private void setUpViews() {
-        recyclerLayout = rootView.findViewById(R.id.recycler_layout);
-        textNoTasks = rootView.findViewById(R.id.text_no_tasks);
-        taskRecyclerView = rootView.findViewById(R.id.recycler_my_tasks);
-        if (myTasksList.size() > 0) {
-            textNoTasks.setVisibility(View.GONE);
-            recyclerLayout.setVisibility(View.VISIBLE);
+        try {
+            recyclerLayout = rootView.findViewById(R.id.recycler_layout);
+            textNoTasks = rootView.findViewById(R.id.text_no_tasks);
+            taskRecyclerView = rootView.findViewById(R.id.recycler_my_tasks);
+            if (myTasksList.size() > 0) {
+                textNoTasks.setVisibility(View.GONE);
+                recyclerLayout.setVisibility(View.VISIBLE);
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
-            taskRecyclerView.setLayoutManager(linearLayoutManager);
-            myTasksAdapter = new MyTasksAdapter(requireContext(), myTasksList, this);
-            taskRecyclerView.setAdapter(myTasksAdapter);
-            myTasksAdapter.notifyDataSetChanged();
-        } else {
-            recyclerLayout.setVisibility(View.GONE);
-            textNoTasks.setVisibility(View.VISIBLE);
-        }
-
-    }
-
-    private void loadMyTasksList() {
-        User loginUser = Utils.getLoginUserDetails(requireContext());
-        if (loginUser != null) {
-            Log.d(TAG, "onCreate: userName:  " + loginUser.getFirstName());
-            Log.d(TAG, "onCreate: userId:  " + loginUser.getMobileNumber());
-            myTasksList = DataUtils.getAssignedTasks(requireContext(), loginUser.getMobileNumber(), false);
-            Log.d(TAG, "onCreate: tasksList: " + myTasksList);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
+                taskRecyclerView.setLayoutManager(linearLayoutManager);
+                myTasksAdapter = new MyTasksAdapter(requireContext(), myTasksList, this);
+                taskRecyclerView.setAdapter(myTasksAdapter);
+                myTasksAdapter.notifyDataSetChanged();
+            } else {
+                recyclerLayout.setVisibility(View.GONE);
+                textNoTasks.setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -146,12 +135,12 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
                         TaskMaster taskMaster = postSnapshot.getValue(TaskMaster.class);
                         if (taskMaster != null) {
                             int lastPosition = taskMaster.getTasksSubDetailsList().size() - 1;
-                            Log.d(TAG, "getAssignedTasks lastPosition: "+lastPosition);
-                            Log.d(TAG, "getAssignedTasks login user number: "+loginUser.getMobileNumber());
-                            Log.d(TAG, "getAssignedTasks task last assign: "+taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserId());
+                            Log.d(TAG, "getAssignedTasks lastPosition: " + lastPosition);
+                            Log.d(TAG, "getAssignedTasks login user number: " + loginUser.getMobileNumber());
+                            Log.d(TAG, "getAssignedTasks task last assign: " + taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserId());
                             if (taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserId().equals(loginUser.getMobileNumber())) {
                                 myTasksList.add(taskMaster);
-                                Log.d(TAG, "getAssignedTasks: filteredTask: "+taskMaster);
+                                Log.d(TAG, "getAssignedTasks: filteredTask: " + taskMaster);
                             }
                         }
                     }
@@ -174,92 +163,35 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
         }
     }
 
-
     private void navigateToDashboard() {
-        requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_main, new MyTasks()).commit();
+        try {
+            requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_main, new MyTasks()).commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void assignTask(int position, TaskMaster taskMaster) {
-        MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-    }
+        try {
+            MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        }
 
     @Override
     public void changeStatus(int position, TaskMaster taskMaster) {
-        showDialogForTaskStatusUpdate(requireContext(), position, taskMaster);
+        try {
+            showDialogForTaskStatusUpdate(requireContext(), position, taskMaster);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-    }
-
-    public void showAlertForUpdateBankDetails(Context context, TaskMaster taskMaster) {
-        try {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            LayoutInflater inflater = this.getLayoutInflater();
-            View dialogView = inflater.inflate(R.layout.dialog_task_admin_update, null);
-            builder.setView(dialogView);
-            builder.setCancelable(false);
-
-            // TextView and EditText Initialization
-            TextView textMainHeader = dialogView.findViewById(R.id.text_task_admin_update_main_header);
-            TextView textTaskStatusHeader = dialogView.findViewById(R.id.text_task_status_header);
-            TextView textTaskStatusValue = dialogView.findViewById(R.id.text_task_status_value);
-            TextView textAssignToHeader = dialogView.findViewById(R.id.text_Assign_to_header);
-            TextView textAssignToValue = dialogView.findViewById(R.id.text_assign_to_value);
-            //Button Initialization
-            Button btnUpdate = dialogView.findViewById(R.id.btn_update);
-            Button btnClose = dialogView.findViewById(R.id.btn_close);
-
-
-            String headerMessage = taskMaster.getTaskType() + " :" + taskMaster.getTaskMasterId();
-            textMainHeader.setText(headerMessage);
-            textTaskStatusHeader.setText("Task Status");
-            textAssignToHeader.setText("Assigned To");
-
-            int lastPosition = (taskMaster.getTasksSubDetailsList().size() - 1);
-
-            Log.d(TAG, "showAlertForUpdateBankDetails: lastPosition: " + lastPosition);
-
-            if (lastPosition >= 0) {
-                String lastStatus = taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskStatus();
-                Log.d(TAG, "showAlertForUpdateBankDetails: lastStatus: " + lastStatus);
-                textTaskStatusValue.setText(lastStatus);
-                String assignedTo = taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserAssigned();
-                textAssignToValue.setText(assignedTo);
-
-            }
-
-            AlertDialog alert = builder.create();
-            alert.show();
-
-            btnUpdate.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-                        alert.dismiss();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-            btnClose.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        alert.dismiss();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void showProgressDialog(String message) {
@@ -378,7 +310,7 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
                             tasksSubDetails.setModifiedOn(Utils.getCurrentTimeStampWithSeconds());
 
                             tasksSubDetails.setTaskStatus(textTaskStatusValue.getText().toString().trim());
-                            String taskAssignedName = loginUser.getFirstName()+" "+loginUser.getLastName();
+                            String taskAssignedName = loginUser.getFirstName() + " " + loginUser.getLastName();
                             tasksSubDetails.setTaskUserAssigned(taskAssignedName);
                             String taskUserId = Objects.requireNonNull(loginUser.getMobileNumber());
                             String taskUserGender = Objects.requireNonNull(loginUser.getGender());
@@ -387,7 +319,7 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
 
                             taskMaster.getTasksSubDetailsList().add(tasksSubDetails);
 
-                            updateTaskOrBug(position, taskMaster,alert);
+                            updateTaskOrBug(position, taskMaster, alert);
                         } else {
                             MyTasksToast.showInfoToast(requireContext(), "Nothing to Update.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
                         }

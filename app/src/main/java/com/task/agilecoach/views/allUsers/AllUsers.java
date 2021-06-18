@@ -1,6 +1,7 @@
 package com.task.agilecoach.views.allUsers;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,11 +10,15 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,8 +27,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.task.agilecoach.R;
 import com.task.agilecoach.helpers.AppConstants;
 import com.task.agilecoach.helpers.FireBaseDatabaseConstants;
+import com.task.agilecoach.helpers.myTaskToast.MyTasksToast;
 import com.task.agilecoach.model.User;
 import com.task.agilecoach.views.main.MainActivity;
+import com.task.agilecoach.views.myTasks.MyTasks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,21 +86,25 @@ public class AllUsers extends Fragment implements AllUsersAdapter.AllUsersItemCl
     }
 
     private void setUpViews() {
-        recyclerLayout = rootView.findViewById(R.id.recycler_layout);
-        textNoUsers = rootView.findViewById(R.id.text_no_users);
-        userRecyclerView = rootView.findViewById(R.id.recycler_users);
-        if (allUsersList.size() > 0) {
-            textNoUsers.setVisibility(View.GONE);
-            recyclerLayout.setVisibility(View.VISIBLE);
+        try {
+            recyclerLayout = rootView.findViewById(R.id.recycler_layout);
+            textNoUsers = rootView.findViewById(R.id.text_no_users);
+            userRecyclerView = rootView.findViewById(R.id.recycler_users);
+            if (allUsersList.size() > 0) {
+                textNoUsers.setVisibility(View.GONE);
+                recyclerLayout.setVisibility(View.VISIBLE);
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
-            userRecyclerView.setLayoutManager(linearLayoutManager);
-            allUsersAdapter = new AllUsersAdapter(requireContext(), allUsersList, this);
-            userRecyclerView.setAdapter(allUsersAdapter);
-            allUsersAdapter.notifyDataSetChanged();
-        } else {
-            recyclerLayout.setVisibility(View.GONE);
-            textNoUsers.setVisibility(View.VISIBLE);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
+                userRecyclerView.setLayoutManager(linearLayoutManager);
+                allUsersAdapter = new AllUsersAdapter(requireContext(), allUsersList, this);
+                userRecyclerView.setAdapter(allUsersAdapter);
+                allUsersAdapter.notifyDataSetChanged();
+            } else {
+                recyclerLayout.setVisibility(View.GONE);
+                textNoUsers.setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -143,85 +154,6 @@ public class AllUsers extends Fragment implements AllUsersAdapter.AllUsersItemCl
         super.onDestroy();
     }
 
-   /* public void showDialogForTaskStatusUpdateAdmin(Context context, int position, User taskMaster) {
-        try {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            LayoutInflater inflater = this.getLayoutInflater();
-            View dialogView = inflater.inflate(R.layout.dialog_task_admin_update, null);
-            builder.setView(dialogView);
-            builder.setCancelable(false);
-
-            // TextView and EditText Initialization
-            TextView textMainHeader = dialogView.findViewById(R.id.text_task_admin_update_main_header);
-            TextView textTaskStatusHeader = dialogView.findViewById(R.id.text_task_status_header);
-            TextView textTaskStatusValue = dialogView.findViewById(R.id.text_task_status_value);
-            TextView textAssignToHeader = dialogView.findViewById(R.id.text_Assign_to_header);
-            TextView textAssignToValue = dialogView.findViewById(R.id.text_assign_to_value);
-            //Button Initialization
-            Button btnUpdate = dialogView.findViewById(R.id.btn_update);
-            Button btnClose = dialogView.findViewById(R.id.btn_close);
-
-
-            String headerMessage = taskMaster.getTaskType() + " : " + taskMaster.getUserId();
-            textMainHeader.setText(headerMessage);
-
-            if (taskMaster.getTaskType().equals(AppConstants.BUG_TYPE)) {
-                textMainHeader.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_task_or_bug_red, 0, 0, 0);
-                textMainHeader.setCompoundDrawablePadding((int) context.getResources().getDimension(R.dimen.std_10_dp));
-                textMainHeader.setTextColor(context.getResources().getColor(R.color.error_color, null));
-            } else {
-                textMainHeader.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_task_or_bug_green, 0, 0, 0);
-                textMainHeader.setCompoundDrawablePadding((int) context.getResources().getDimension(R.dimen.std_10_dp));
-                textMainHeader.setTextColor(context.getResources().getColor(R.color.success_color, null));
-            }
-
-            textTaskStatusHeader.setText("Task Status");
-            textAssignToHeader.setText("Assigned To");
-
-            int lastPosition = (taskMaster.getTasksSubDetailsList().size() - 1);
-
-            Log.d(TAG, "showAlertForUpdateBankDetails: lastPosition: " + lastPosition);
-
-            if (lastPosition >= 0) {
-                String lastStatus = taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskStatus();
-                Log.d(TAG, "showAlertForUpdateBankDetails: lastStatus: " + lastStatus);
-                textTaskStatusValue.setText(lastStatus);
-                String assignedTo = taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserAssigned();
-                textAssignToValue.setText(assignedTo);
-
-            }
-
-            AlertDialog alert = builder.create();
-            alert.show();
-
-            btnUpdate.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-                        alert.dismiss();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-            btnClose.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        alert.dismiss();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
-
     private void showProgressDialog(String message) {
         try {
             if (progressDialog != null) {
@@ -247,11 +179,127 @@ public class AllUsers extends Fragment implements AllUsersAdapter.AllUsersItemCl
 
     @Override
     public void userDetails(int position, User userDetails) {
-
+        try {
+            MyTasksToast.showInfoToast(requireContext(),"Implementation pending",MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void makeInActiveUser(int position, User userDetails) {
+        try {
+            showDialogActiveOrInActiveUserByAdmin(requireContext(), position, userDetails);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void showDialogActiveOrInActiveUserByAdmin(Context context, int position, User user) {
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            LayoutInflater inflater = this.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.alert_dialog_with_two_buttons, null);
+            builder.setView(dialogView);
+            builder.setCancelable(false);
+
+            // TextView and EditText Initialization
+            TextView textAlertHeader = dialogView.findViewById(R.id.dialog_message_header);
+            TextView textAlertDesc = dialogView.findViewById(R.id.dialog_message_desc);
+
+            TextView textBtnClose = dialogView.findViewById(R.id.text_button_left);
+            TextView textBtnActiveOrInActive = dialogView.findViewById(R.id.text_button_right);
+
+            textAlertHeader.setText("Message..!");
+            String activeOrInActiveMessage = "Are you sure want to make ";
+            String rightButtonText = "Active";
+
+            boolean isActive = true;
+            if (user.getIsActive().equals("false")) {
+                isActive = false;
+            }
+
+            if (isActive) {
+                activeOrInActiveMessage = activeOrInActiveMessage + " InActive \n" + user.getFirstName() + " " + user.getLastName() + "?";
+                rightButtonText = "InActive";
+                textBtnActiveOrInActive.setTextColor(context.getResources().getColor(R.color.error_color, null));
+                textAlertHeader.setTextColor(context.getResources().getColor(R.color.error_color, null));
+            } else {
+                activeOrInActiveMessage = activeOrInActiveMessage + " Active \n" + user.getFirstName() + " " + user.getLastName() + "?";
+                rightButtonText = "Active";
+                textBtnActiveOrInActive.setTextColor(context.getResources().getColor(R.color.success_color, null));
+                textAlertHeader.setTextColor(context.getResources().getColor(R.color.success_color, null));
+            }
+
+            textAlertDesc.setText(activeOrInActiveMessage);
+            textBtnClose.setText("Close");
+            textBtnActiveOrInActive.setText(rightButtonText);
+
+            AlertDialog alert = builder.create();
+            alert.show();
+
+            textBtnActiveOrInActive.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        if (user.getIsActive().equals("false")) {
+                            user.setIsActive("true");
+                        } else {
+                            user.setIsActive("false");
+                        }
+                        alert.dismiss();
+                        updateUserActiveStatus(context, position, user);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            textBtnClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        alert.dismiss();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void updateUserActiveStatus(Context context, int position, User user) {
+        try {
+            showProgressDialog("Processing your request.");
+
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
+            databaseReference.child(user.getMobileNumber()).setValue(user)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            hideProgressDialog();
+                            MyTasksToast.showSuccessToastWithBottom(requireContext(), "Updated successfully", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+
+                            if (allUsersAdapter != null) {
+                                allUsersAdapter.notifyDataSetChanged();
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            hideProgressDialog();
+                            MyTasksToast.showErrorToastWithBottom(requireContext(), "Failed to update", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                        }
+                    });
+        } catch (Exception e) {
+            hideProgressDialog();
+            MyTasksToast.showErrorToastWithBottom(requireContext(), e.getMessage(), MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+            e.printStackTrace();
+        }
     }
 }

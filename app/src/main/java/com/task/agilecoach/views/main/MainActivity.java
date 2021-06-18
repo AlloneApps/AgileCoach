@@ -24,9 +24,15 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.task.agilecoach.BuildConfig;
 import com.task.agilecoach.R;
 import com.task.agilecoach.helpers.AppConstants;
+import com.task.agilecoach.helpers.FireBaseDatabaseConstants;
 import com.task.agilecoach.helpers.NetworkUtil;
 import com.task.agilecoach.helpers.Utils;
 import com.task.agilecoach.helpers.myTaskToast.MyTasksToast;
@@ -59,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         try {
             setContentView(R.layout.activity_main);
             AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
@@ -133,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 navUserId.setText(loginUser.getEmailId());
 
                 setProfileAvatar(loginUser);
+
+                verifyUserActiveStatus(loginUser);
             }
 
             TextView textVersion = findViewById(R.id.internal_version);
@@ -160,6 +167,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void verifyUserActiveStatus(User user) {
+        try {
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
+
+            databaseReference.child(user.getMobileNumber()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        String isActiveStatus = snapshot.child(FireBaseDatabaseConstants.IS_ACTIVE).getValue(String.class);
+                        Log.d(TAG, "onDataChange: isActiveStatus: " + isActiveStatus);
+                        if (isActiveStatus != null) {
+                            if (isActiveStatus.equals("false")) {
+                                MyTasksToast.showErrorToastWithBottom(MainActivity.this, "You are DeActivated now, Please contact your admin", MyTasksToast.MYTASKS_TOAST_LENGTH_LONG);
+                                logout();
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -293,7 +329,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private int getFragmentCount() {
-        return getSupportFragmentManager().getBackStackEntryCount();
+        try {
+            return getSupportFragmentManager().getBackStackEntryCount();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
 }

@@ -19,14 +19,17 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
+        try {
+            setContentView(R.layout.activity_splash);
 
-        setUpView();
+            setUpView();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void setUpView() {
         try {
-
             String loginToken = Utils.getSharedPrefsString(SplashActivity.this, AppConstants.LOGIN_TOKEN);
             Log.d(TAG, "setUpView: login token: "+loginToken);
             new Handler().postDelayed(new Runnable() {

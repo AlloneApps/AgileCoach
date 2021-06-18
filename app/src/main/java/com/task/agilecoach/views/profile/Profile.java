@@ -94,145 +94,161 @@ public class Profile extends Fragment {
     @Override
     public void onActivityCreated(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        try {
+            ((MainActivity) requireActivity()).setTitle("Profile");
 
-        ((MainActivity) requireActivity()).setTitle("Profile");
+            progressDialog = new ProgressDialog(requireContext());
 
-        progressDialog = new ProgressDialog(requireContext());
+            firebaseDatabase = FirebaseDatabase.getInstance();
+            mUserReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        mUserReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
-
-        setUpViews();
+            setUpViews();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void setUpViews() {
-        imageUser = rootView.findViewById(R.id.image_user);
+        try {
+            imageUser = rootView.findViewById(R.id.image_user);
 
-        editFirstName = rootView.findViewById(R.id.edit_first_name);
-        editLastName = rootView.findViewById(R.id.edit_last_name);
+            editFirstName = rootView.findViewById(R.id.edit_first_name);
+            editLastName = rootView.findViewById(R.id.edit_last_name);
 
-        editEmailId = rootView.findViewById(R.id.edit_email);
-        editDob = rootView.findViewById(R.id.edit_dob);
-        textGender = rootView.findViewById(R.id.text_gender);
+            editEmailId = rootView.findViewById(R.id.edit_email);
+            editDob = rootView.findViewById(R.id.edit_dob);
+            textGender = rootView.findViewById(R.id.text_gender);
 
-        btnUpdate = rootView.findViewById(R.id.btn_update);
+            btnUpdate = rootView.findViewById(R.id.btn_update);
 
-        editDob.setKeyListener(null);
+            editDob.setKeyListener(null);
 
-        RxView.touches(editDob).subscribe(motionEvent -> {
-            if (motionEvent.getAction() == MotionEvent.ACTION_UP)
-                showDatePicker().show();
-        });
+            RxView.touches(editDob).subscribe(motionEvent -> {
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP)
+                    showDatePicker().show();
+            });
 
-        List<String> genderTypeList = DataUtils.getGenderType();
+            List<String> genderTypeList = DataUtils.getGenderType();
 
-        RxView.touches(textGender).subscribe(motionEvent -> {
-            try {
-                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(requireContext());
-                    builderSingle.setTitle("Select Gender");
+            RxView.touches(textGender).subscribe(motionEvent -> {
+                try {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                        AlertDialog.Builder builderSingle = new AlertDialog.Builder(requireContext());
+                        builderSingle.setTitle("Select Gender");
 
-                    final ArrayAdapter<String> genderTypeSelectionAdapter = new ArrayAdapter<String>(requireContext(),
-                            android.R.layout.select_dialog_singlechoice, genderTypeList) {
-                        @NonNull
-                        @Override
-                        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                            View view = super.getView(position, convertView, parent);
-                            TextView text = view.findViewById(android.R.id.text1);
-                            text.setTextColor(Color.BLACK);
-                            return view;
-                        }
-                    };
+                        final ArrayAdapter<String> genderTypeSelectionAdapter = new ArrayAdapter<String>(requireContext(),
+                                android.R.layout.select_dialog_singlechoice, genderTypeList) {
+                            @NonNull
+                            @Override
+                            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                View view = super.getView(position, convertView, parent);
+                                TextView text = view.findViewById(android.R.id.text1);
+                                text.setTextColor(Color.BLACK);
+                                return view;
+                            }
+                        };
 
-                    builderSingle.setNegativeButton("Cancel", (dialog, position) -> dialog.dismiss());
+                        builderSingle.setNegativeButton("Cancel", (dialog, position) -> dialog.dismiss());
 
-                    builderSingle.setAdapter(genderTypeSelectionAdapter, (dialog, position) -> {
-                        textGender.setText(genderTypeSelectionAdapter.getItem(position));
-                    });
-                    builderSingle.show();
+                        builderSingle.setAdapter(genderTypeSelectionAdapter, (dialog, position) -> {
+                            textGender.setText(genderTypeSelectionAdapter.getItem(position));
+                        });
+                        builderSingle.show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+            });
 
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (validateFields()) {
+            btnUpdate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (validateFields()) {
 
-                    User loginUser = Utils.getLoginUserDetails(requireContext());
+                        User loginUser = Utils.getLoginUserDetails(requireContext());
 
-                    Log.d(TAG, "onClick: loginUser: " + loginUser);
-                    User user = new User();
-                    user.setMobileNumber(loginUser.getMobileNumber());
-                    user.setmPin(loginUser.getmPin());
+                        Log.d(TAG, "onClick: loginUser: " + loginUser);
+                        User user = new User();
+                        user.setMobileNumber(loginUser.getMobileNumber());
+                        user.setmPin(loginUser.getmPin());
 
-                    user.setFirstName(Utils.getFieldValue(editFirstName));
-                    user.setLastName(Utils.getFieldValue(editLastName));
-                    user.setEmailId(Utils.getFieldValue(editEmailId));
-                    user.setDateOfBirth(Utils.getFieldValue(editDob));
-                    user.setGender(textGender.getText().toString().trim());
-                    user.setRole(AppConstants.User_ROLE);
-                    user.setActive(true);
+                        user.setFirstName(Utils.getFieldValue(editFirstName));
+                        user.setLastName(Utils.getFieldValue(editLastName));
+                        user.setEmailId(Utils.getFieldValue(editEmailId));
+                        user.setDateOfBirth(Utils.getFieldValue(editDob));
+                        user.setGender(textGender.getText().toString().trim());
+                        user.setRole(AppConstants.User_ROLE);
+                        user.setIsActive("true");
 
-                    if (isAnyUpdate(user)) {
-                        showProgressDialog("Processing please wait.");
-                        updateUserDetails(user);
-                    } else {
-                        MyTasksToast.showInfoToast(requireContext(), "Nothing to update.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                        if (isAnyUpdate(user)) {
+                            showProgressDialog("Processing please wait.");
+                            updateUserDetails(user);
+                        } else {
+                            MyTasksToast.showInfoToast(requireContext(), "Nothing to update.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        User loginUser = Utils.getLoginUserDetails(requireContext());
-        Log.d(TAG, "setUpViews: loginUser: "+loginUser);
-        updateUserDetailsToView(loginUser);
-
+            User loginUser = Utils.getLoginUserDetails(requireContext());
+            Log.d(TAG, "setUpViews: loginUser: " + loginUser);
+            updateUserDetailsToView(loginUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isAnyUpdate(User editedUserDetails) {
-        User user = Utils.getLoginUserDetails(requireContext());
+        try {
+            User user = Utils.getLoginUserDetails(requireContext());
 
-        if (user != null) {
-            if (!(user.getFirstName().equals(editedUserDetails.getFirstName()))) {
-                return true;
-            } else if (!(user.getLastName().equals(editedUserDetails.getLastName()))) {
-                return true;
-            } else if (!(user.getEmailId().equals(editedUserDetails.getEmailId()))) {
-                return true;
-            } else if (!(user.getDateOfBirth().equals(editedUserDetails.getDateOfBirth()))) {
-                return true;
-            } else if (!(user.getGender().equals(editedUserDetails.getGender()))) {
-                return true;
+            if (user != null) {
+                if (!(user.getFirstName().equals(editedUserDetails.getFirstName()))) {
+                    return true;
+                } else if (!(user.getLastName().equals(editedUserDetails.getLastName()))) {
+                    return true;
+                } else if (!(user.getEmailId().equals(editedUserDetails.getEmailId()))) {
+                    return true;
+                } else if (!(user.getDateOfBirth().equals(editedUserDetails.getDateOfBirth()))) {
+                    return true;
+                } else if (!(user.getGender().equals(editedUserDetails.getGender()))) {
+                    return true;
+                } else {
+                    return false;
+                }
+
             } else {
                 return false;
             }
-
-        } else {
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
 
     private boolean validateFields() {
-        if (Utils.isEmptyField(editFirstName.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter first name.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (Utils.isEmptyField(editLastName.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter last name.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (Utils.isEmptyField(editEmailId.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter email id.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (Utils.isEmptyField(editDob.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter date of birth.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (Utils.isEmptyField(textGender.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter gender.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+        try {
+            if (Utils.isEmptyField(editFirstName.getText().toString().trim())) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter first name.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            } else if (Utils.isEmptyField(editLastName.getText().toString().trim())) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter last name.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            } else if (Utils.isEmptyField(editEmailId.getText().toString().trim())) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter email id.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            } else if (Utils.isEmptyField(editDob.getText().toString().trim())) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter date of birth.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            } else if (Utils.isEmptyField(textGender.getText().toString().trim())) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter gender.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
-        return true;
     }
 
     private DatePickerDialog showDatePicker() {
@@ -248,10 +264,6 @@ public class Profile extends Fragment {
         }
     }
 
-    /**
-     * Updates editDate EditText text with user selected date from date picker dialog or updates
-     * with current date.
-     */
     private void updateDateView() {
         try {
             String myFormat = "dd/MM/yyyy";
@@ -273,7 +285,7 @@ public class Profile extends Fragment {
 
                             Utils.saveLoginUserDetails(requireContext(), user);
 
-                            Log.d(TAG, "onSuccess: loginUserUpdate: "+Utils.getLoginUserDetails(requireContext()));
+                            Log.d(TAG, "onSuccess: loginUserUpdate: " + Utils.getLoginUserDetails(requireContext()));
 
                             MyTasksToast.showSuccessToastWithBottom(requireContext(), "User details updated successfully", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
 
@@ -303,7 +315,7 @@ public class Profile extends Fragment {
                 editDob.setText(user.getDateOfBirth());
                 textGender.setText(user.getGender());
 
-                Log.d(TAG, "updateUserDetailsToView: userGender: "+user.getGender());
+                Log.d(TAG, "updateUserDetailsToView: userGender: " + user.getGender());
 
                 if (user.getGender().equals(AppConstants.FEMALE_GENDER)) {
                     imageUser.setImageDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.ic_female_avatar));

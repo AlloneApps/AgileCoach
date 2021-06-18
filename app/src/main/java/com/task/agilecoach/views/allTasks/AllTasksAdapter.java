@@ -151,7 +151,7 @@ public class AllTasksAdapter extends RecyclerView.Adapter<AllTasksAdapter.AllTas
         void changeStatus(int position, TaskMaster taskMaster);
     }
 
-    static class AllTasksViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    static class AllTasksViewHolder extends RecyclerView.ViewHolder{
         TaskMaster deliveryMasterMain;
         TextView textTaskNumber, textTaskHeader, textTaskStatus, textView, textUpdateStatus, textTaskType, textAssignTo;
         CircleImageView imageUserAvatar;
@@ -174,14 +174,5 @@ public class AllTasksAdapter extends RecyclerView.Adapter<AllTasksAdapter.AllTas
         public void setItem(TaskMaster item) {
             deliveryMasterMain = item;
         }
-
-        @Override
-        public void onClick(View v) {
-        }
-    }
-
-    private String getColoredSpanned(String text, String color) {
-        String input = "<font color=" + color + ">" + text + "</font>";
-        return input;
     }
 }

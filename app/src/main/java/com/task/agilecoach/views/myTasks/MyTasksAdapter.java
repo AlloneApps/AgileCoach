@@ -60,8 +60,9 @@ public class MyTasksAdapter extends RecyclerView.Adapter<MyTasksAdapter.PickUpRe
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(final MyTasksAdapter.PickUpRequestsViewHolder holder, int position) {
-        holder.setItem(myTaskaMainList.get(position));
         try {
+            holder.setItem(myTaskaMainList.get(position));
+
             TaskMaster taskMaster = myTaskaMainList.get(position);
             if (taskMaster != null) {
 
@@ -145,7 +146,7 @@ public class MyTasksAdapter extends RecyclerView.Adapter<MyTasksAdapter.PickUpRe
         void changeStatus(int position, TaskMaster taskMaster);
     }
 
-    static class PickUpRequestsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    static class PickUpRequestsViewHolder extends RecyclerView.ViewHolder {
         TaskMaster deliveryMasterMain;
         TextView textTaskNumber, textTaskHeader, textTaskStatus, textView, textUpdateStatus,textTaskType;
         CircleImageView imageUserAvatar;
@@ -167,14 +168,5 @@ public class MyTasksAdapter extends RecyclerView.Adapter<MyTasksAdapter.PickUpRe
         public void setItem(TaskMaster item) {
             deliveryMasterMain = item;
         }
-
-        @Override
-        public void onClick(View v) {
-        }
-    }
-
-    private String getColoredSpanned(String text, String color) {
-        String input = "<font color=" + color + ">" + text + "</font>";
-        return input;
     }
 }

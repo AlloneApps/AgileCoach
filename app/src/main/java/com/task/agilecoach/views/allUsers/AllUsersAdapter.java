@@ -56,8 +56,9 @@ public class AllUsersAdapter extends RecyclerView.Adapter<AllUsersAdapter.AllTas
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(final AllUsersAdapter.AllTasksViewHolder holder, int position) {
-        holder.setItem(allUsersMainList.get(position));
         try {
+            holder.setItem(allUsersMainList.get(position));
+
             User userMain = allUsersMainList.get(position);
             if (userMain != null) {
                 if (userMain.getGender().equals(AppConstants.MALE_GENDER)) {
@@ -76,10 +77,17 @@ public class AllUsersAdapter extends RecyclerView.Adapter<AllUsersAdapter.AllTas
 
                 String userActiveStatus = "";
 
-                if (userMain.isActive()) {
+                boolean isActive = true;
+                if (userMain.getIsActive().equals("false")) {
+                    isActive = false;
+                }
+
+                if (isActive) {
                     userActiveStatus = AppConstants.ACTIVE_USER;
+                    holder.textMakeInActive.setText("InActive");
                 } else {
                     userActiveStatus = AppConstants.IN_ACTIVE_USER;
+                    holder.textMakeInActive.setText("Active");
                 }
                 holder.textUserActiveStatus.setText(userActiveStatus);
 
@@ -133,7 +141,7 @@ public class AllUsersAdapter extends RecyclerView.Adapter<AllUsersAdapter.AllTas
         void makeInActiveUser(int position, User userDetails);
     }
 
-    static class AllTasksViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    static class AllTasksViewHolder extends RecyclerView.ViewHolder{
         User user;
         TextView textUserName, textMobileNumber, textUserActiveStatus, textUserDetails, textMakeInActive;
         CircleImageView imageUserAvatar;
@@ -153,10 +161,6 @@ public class AllUsersAdapter extends RecyclerView.Adapter<AllUsersAdapter.AllTas
 
         public void setItem(User item) {
             user = item;
-        }
-
-        @Override
-        public void onClick(View v) {
         }
     }
 }

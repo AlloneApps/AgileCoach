@@ -12,7 +12,7 @@ public class User implements Parcelable {
     private String dateOfBirth;
     private String gender;
     private String role;
-    private boolean isActive;
+    private String isActive;
 
     public User() {
     }
@@ -26,7 +26,7 @@ public class User implements Parcelable {
         dateOfBirth = in.readString();
         gender = in.readString();
         role = in.readString();
-        isActive = in.readByte() != 0;
+        isActive = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -105,12 +105,12 @@ public class User implements Parcelable {
         this.role = role;
     }
 
-    public boolean isActive() {
+    public String getIsActive() {
         return isActive;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
     }
 
     @Override
@@ -124,7 +124,7 @@ public class User implements Parcelable {
                 ", dateOfBirth='" + dateOfBirth + '\'' +
                 ", gender='" + gender + '\'' +
                 ", role='" + role + '\'' +
-                ", isActive=" + isActive +
+                ", isActive='" + isActive + '\'' +
                 '}';
     }
 
@@ -143,6 +143,6 @@ public class User implements Parcelable {
         parcel.writeString(dateOfBirth);
         parcel.writeString(gender);
         parcel.writeString(role);
-        parcel.writeByte((byte) (isActive ? 1 : 0));
+        parcel.writeString(isActive);
     }
 }

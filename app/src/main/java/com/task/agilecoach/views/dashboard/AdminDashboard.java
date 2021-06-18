@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -43,6 +44,7 @@ public class AdminDashboard extends Fragment {
     private View rootView;
     List<TaskMaster> allTasksList = new ArrayList<>();
     List<User> userList = new ArrayList<>();
+    private TextView textNoUsers, textNoTasksOrBugs;
 
     private PieChart pieChartUsers, pieChartTasks;
 
@@ -89,13 +91,16 @@ public class AdminDashboard extends Fragment {
                     .setColor(Color.BLACK);
 
             setUpView();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void setUpView() {
         try {
+            textNoUsers = rootView.findViewById(R.id.no_users_available);
+            textNoTasksOrBugs = rootView.findViewById(R.id.no_tasks_or_bugs_available);
+
             pieChartUsers = rootView.findViewById(R.id.pie_chart_users);
             pieChartTasks = rootView.findViewById(R.id.pie_chart_tasks);
 
@@ -106,7 +111,7 @@ public class AdminDashboard extends Fragment {
             loadAllUsersList();
 
             loadAllTaskList();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -176,54 +181,61 @@ public class AdminDashboard extends Fragment {
 
     private void generatePieChartForUserDetails(List<User> userList) {
         try {
+            if (userList.size() > 0) {
+                textNoUsers.setVisibility(View.GONE);
+                pieChartUsers.setVisibility(View.VISIBLE);
 
-            int activeUsers = 0;
-            int inActiveUsers = 0;
-            int totalUsers = 0;
+                int activeUsers = 0;
+                int inActiveUsers = 0;
+                int totalUsers = 0;
 
-            for (User user : userList) {
-                if (user.isActive()) {
-                    activeUsers = activeUsers + 1;
-                    totalUsers = totalUsers + 1;
-                } else {
-                    inActiveUsers = inActiveUsers + 1;
-                    totalUsers = totalUsers + 1;
+                for (User user : userList) {
+                    if (user.getIsActive().equals("true")) {
+                        activeUsers = activeUsers + 1;
+                        totalUsers = totalUsers + 1;
+                    } else {
+                        inActiveUsers = inActiveUsers + 1;
+                        totalUsers = totalUsers + 1;
+                    }
                 }
+
+                Log.d(TAG, "generatePieChartForUserDetails: activeUsers: " + activeUsers);
+                Log.d(TAG, "generatePieChartForUserDetails: inActiveUsers: " + inActiveUsers);
+
+                ArrayList<PieEntry> entries = new ArrayList<>();
+
+
+                entries.add(new PieEntry(activeUsers, "Active  "));
+                entries.add(new PieEntry(inActiveUsers, "InActive  "));
+
+
+                String totalUsersTitle = "Total users : " + totalUsers;
+                PieDataSet dataSet = new PieDataSet(entries, totalUsersTitle);
+                dataSet.setSliceSpace(3f);
+                dataSet.setSelectionShift(5f);
+
+                // add a lot of colors
+                ArrayList<Integer> colors = new ArrayList<>();
+
+                colors.add(Color.rgb(50, 205, 50));
+                colors.add(Color.rgb(255, 0, 0));
+
+                dataSet.setColors(colors);
+
+                PieData data = new PieData(dataSet);
+                data.setValueFormatter(new LargeValueFormatter());
+                data.setValueTextSize(11f);
+                data.setValueTextColor(Color.WHITE);
+                pieChartUsers.setData(data);
+
+                // undo all highlights
+                pieChartUsers.highlightValues(null);
+
+                pieChartUsers.invalidate();
+            } else {
+                pieChartUsers.setVisibility(View.GONE);
+                textNoUsers.setVisibility(View.VISIBLE);
             }
-
-            Log.d(TAG, "generatePieChartForUserDetails: activeUsers: " + activeUsers);
-            Log.d(TAG, "generatePieChartForUserDetails: inActiveUsers: " + inActiveUsers);
-
-            ArrayList<PieEntry> entries = new ArrayList<>();
-
-
-            entries.add(new PieEntry(activeUsers, "Active  "));
-            entries.add(new PieEntry(inActiveUsers, "InActive  "));
-
-
-            String totalUsersTitle = "Total users : " + totalUsers;
-            PieDataSet dataSet = new PieDataSet(entries, totalUsersTitle);
-            dataSet.setSliceSpace(3f);
-            dataSet.setSelectionShift(5f);
-
-            // add a lot of colors
-            ArrayList<Integer> colors = new ArrayList<>();
-
-            colors.add(Color.rgb(50, 205, 50));
-            colors.add(Color.rgb(255, 0, 0));
-
-            dataSet.setColors(colors);
-
-            PieData data = new PieData(dataSet);
-            data.setValueFormatter(new LargeValueFormatter());
-            data.setValueTextSize(11f);
-            data.setValueTextColor(Color.WHITE);
-            pieChartUsers.setData(data);
-
-            // undo all highlights
-            pieChartUsers.highlightValues(null);
-
-            pieChartUsers.invalidate();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -231,57 +243,65 @@ public class AdminDashboard extends Fragment {
 
     private void generatePieChartForTasks(List<TaskMaster> allTasksList) {
         try {
-            int totalTasksOrBugs = 0;
-            int totalTasks = 0;
-            int totalBugs = 0;
+            if (allTasksList.size() > 0) {
+                textNoTasksOrBugs.setVisibility(View.GONE);
+                pieChartTasks.setVisibility(View.VISIBLE);
+                int totalTasksOrBugs = 0;
+                int totalTasks = 0;
+                int totalBugs = 0;
 
-            for (TaskMaster taskMaster : allTasksList) {
-                if (taskMaster.getTaskType().equalsIgnoreCase(AppConstants.BUG_TYPE)) {
-                    totalBugs = totalBugs + 1;
-                    totalTasksOrBugs = totalTasksOrBugs + 1;
-                } else {
-                    totalTasks = totalTasks + 1;
-                    totalTasksOrBugs = totalTasksOrBugs + 1;
+                for (TaskMaster taskMaster : allTasksList) {
+                    if (taskMaster.getTaskType().equalsIgnoreCase(AppConstants.BUG_TYPE)) {
+                        totalBugs = totalBugs + 1;
+                        totalTasksOrBugs = totalTasksOrBugs + 1;
+                    } else {
+                        totalTasks = totalTasks + 1;
+                        totalTasksOrBugs = totalTasksOrBugs + 1;
+                    }
                 }
+
+                Log.d(TAG, "generatePieChartForTasks: totalTasksOrBugs:" + totalTasksOrBugs);
+                Log.d(TAG, "generatePieChartForTasks: totalTasks:" + totalTasks);
+                Log.d(TAG, "generatePieChartForTasks: totalBugs:" + totalBugs);
+
+
+                ArrayList<PieEntry> entries = new ArrayList<>();
+
+                String tasks = requireContext().getString(R.string.tasks_with_space);
+                String bugs = requireContext().getString(R.string.bugs_with_space);
+
+                entries.add(new PieEntry(totalTasks, tasks));
+                entries.add(new PieEntry(totalBugs, bugs));
+
+                String totalTaskOrBugsString = "Total Tasks or Bugs : " + totalTasksOrBugs;
+
+                PieDataSet dataSet = new PieDataSet(entries, totalTaskOrBugsString);
+                dataSet.setSliceSpace(3f);
+                dataSet.setSelectionShift(5f);
+
+                // add a lot of colors
+                ArrayList<Integer> colors = new ArrayList<>();
+
+                colors.add(Color.rgb(50, 205, 50));
+                colors.add(Color.rgb(255, 0, 0));
+
+                dataSet.setColors(colors);
+
+                PieData data = new PieData(dataSet);
+                data.setValueFormatter(new LargeValueFormatter());
+                data.setValueTextSize(11f);
+                data.setValueTextColor(Color.WHITE);
+                pieChartTasks.setData(data);
+
+                // undo all highlights
+                pieChartTasks.highlightValues(null);
+
+                pieChartTasks.invalidate();
+
+            } else {
+                pieChartTasks.setVisibility(View.GONE);
+                textNoTasksOrBugs.setVisibility(View.VISIBLE);
             }
-
-            Log.d(TAG, "generatePieChartForTasks: totalTasksOrBugs:" + totalTasksOrBugs);
-            Log.d(TAG, "generatePieChartForTasks: totalTasks:" + totalTasks);
-            Log.d(TAG, "generatePieChartForTasks: totalBugs:" + totalBugs);
-
-
-            ArrayList<PieEntry> entries = new ArrayList<>();
-
-            String tasks = requireContext().getString(R.string.tasks_with_space);
-            String bugs = requireContext().getString(R.string.bugs_with_space);
-
-            entries.add(new PieEntry(totalTasks, tasks));
-            entries.add(new PieEntry(totalBugs, bugs));
-
-            String totalTaskOrBugsString = "Total Tasks or Bugs : " + totalTasksOrBugs;
-
-            PieDataSet dataSet = new PieDataSet(entries, totalTaskOrBugsString);
-            dataSet.setSliceSpace(3f);
-            dataSet.setSelectionShift(5f);
-
-            // add a lot of colors
-            ArrayList<Integer> colors = new ArrayList<>();
-
-            colors.add(Color.rgb(50, 205, 50));
-            colors.add(Color.rgb(255, 0, 0));
-
-            dataSet.setColors(colors);
-
-            PieData data = new PieData(dataSet);
-            data.setValueFormatter(new LargeValueFormatter());
-            data.setValueTextSize(11f);
-            data.setValueTextColor(Color.WHITE);
-            pieChartTasks.setData(data);
-
-            // undo all highlights
-            pieChartTasks.highlightValues(null);
-
-            pieChartTasks.invalidate();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -328,7 +348,7 @@ public class AdminDashboard extends Fragment {
             // entry label styling
             pieChartUsers.setEntryLabelColor(Color.WHITE);
             pieChartUsers.setEntryLabelTextSize(12f);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -374,7 +394,7 @@ public class AdminDashboard extends Fragment {
             // entry label styling
             pieChartTasks.setEntryLabelColor(Color.WHITE);
             pieChartTasks.setEntryLabelTextSize(12f);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

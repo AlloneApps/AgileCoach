@@ -87,182 +87,191 @@ public class CreateTasks extends Fragment {
         try {
             ((MainActivity) requireActivity()).setTitle("Create Tasks");
             progressDialog = new ProgressDialog(requireContext());
+
+            loadAllUsers();
+
+            loadTaskTypes();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        loadAllUsers();
-
-        loadTaskTypes();
     }
 
     private void setUpViews() {
-        editTaskHeader = rootView.findViewById(R.id.edit_task_header);
-        editTaskDescription = rootView.findViewById(R.id.edit_task_description);
-        editTaskEstimation = rootView.findViewById(R.id.edit_task_estimation);
+        try {
+            editTaskHeader = rootView.findViewById(R.id.edit_task_header);
+            editTaskDescription = rootView.findViewById(R.id.edit_task_description);
+            editTaskEstimation = rootView.findViewById(R.id.edit_task_estimation);
 
-        textAssignedUser = rootView.findViewById(R.id.text_assign_user);
-        textTaskType = rootView.findViewById(R.id.text_task_type);
+            textAssignedUser = rootView.findViewById(R.id.text_assign_user);
+            textTaskType = rootView.findViewById(R.id.text_task_type);
 
-        btnCreateTask = rootView.findViewById(R.id.btn_create_task);
+            btnCreateTask = rootView.findViewById(R.id.btn_create_task);
 
-        // Create Task button click
-        btnCreateTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (validateFields()) {
+            // Create Task button click
+            btnCreateTask.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (validateFields()) {
 
-                    String taskMasterId = (System.currentTimeMillis() / 1000) + "";
-                    TaskMaster taskMaster = new TaskMaster();
+                        String taskMasterId = (System.currentTimeMillis() / 1000) + "";
+                        TaskMaster taskMaster = new TaskMaster();
 
-                    taskMaster.setTaskMasterId(taskMasterId);
-                    taskMaster.setTaskType(textTaskType.getText().toString().trim());
-                    taskMaster.setTaskHeader(editTaskHeader.getText().toString().trim());
-                    taskMaster.setTaskDescription(editTaskDescription.getText().toString().trim());
+                        taskMaster.setTaskMasterId(taskMasterId);
+                        taskMaster.setTaskType(textTaskType.getText().toString().trim());
+                        taskMaster.setTaskHeader(editTaskHeader.getText().toString().trim());
+                        taskMaster.setTaskDescription(editTaskDescription.getText().toString().trim());
 
-                    if (editTaskEstimation.getText().toString().trim().isEmpty()) {
-                        taskMaster.setTaskEstimation(0.0);
-                    } else {
-                        taskMaster.setTaskEstimation(Double.parseDouble(editTaskEstimation.getText().toString().trim()));
-                    }
-
-                    User user = Utils.getLoginUserDetails(requireContext());
-                    if (user != null) {
-                        taskMaster.setTaskCreatedBy(user.getEmailId());
-                    }
-
-                    taskMaster.setTaskCreatedOn(Utils.getCurrentTimeStampWithSeconds());
-
-                    List<TasksSubDetails> tasksSubDetailsList = new ArrayList<>();
-
-                    TasksSubDetails tasksSubDetails = new TasksSubDetails();
-
-                    if (textTaskType.getText().toString().trim().equalsIgnoreCase(AppConstants.BUG_TYPE)) {
-                        tasksSubDetails.setTaskStatus(AppConstants.TODO_STATUS);
-                    } else {
-                        tasksSubDetails.setTaskStatus(AppConstants.TODO_STATUS);
-                    }
-
-                    tasksSubDetails.setTaskId(taskMasterId);
-
-                    tasksSubDetails.setTaskUserAssigned(textAssignedUser.getText().toString().trim());
-
-
-                    User userSelected = userDetailsMap.get(textAssignedUser.getText().toString().trim());
-
-                    if (userSelected != null) {
-                        String userId = userSelected.getMobileNumber();
-                        tasksSubDetails.setTaskUserId(userId);
-                        tasksSubDetails.setTaskUserGender(userSelected.getGender());
-                    }
-
-                    if (user != null) {
-                        tasksSubDetails.setModifiedBy(user.getEmailId());
-                    }
-
-                    tasksSubDetails.setModifiedOn(Utils.getCurrentTimeStampWithSeconds());
-
-                    tasksSubDetailsList.add(tasksSubDetails);
-                    taskMaster.setTasksSubDetailsList(tasksSubDetailsList);
-
-                    showProgressDialog("Processing your request.");
-
-                    createNewTask(taskMaster);
-                }
-            }
-        });
-
-        // Task type Selection
-        RxView.touches(textTaskType).subscribe(motionEvent -> {
-            try {
-                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(requireContext());
-                    builderSingle.setTitle("Select Task Type");
-
-                    final ArrayAdapter<String> taskTypeSelectionAdapter = new ArrayAdapter<String>(requireContext(),
-                            android.R.layout.select_dialog_singlechoice, taskTypeList) {
-                        @NonNull
-                        @Override
-                        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                            View view = super.getView(position, convertView, parent);
-                            TextView text = view.findViewById(android.R.id.text1);
-                            text.setTextColor(Color.BLACK);
-                            return view;
+                        if (editTaskEstimation.getText().toString().trim().isEmpty()) {
+                            taskMaster.setTaskEstimation(0.0);
+                        } else {
+                            taskMaster.setTaskEstimation(Double.parseDouble(editTaskEstimation.getText().toString().trim()));
                         }
-                    };
 
-                    builderSingle.setNegativeButton("Cancel", (dialog, position) -> dialog.dismiss());
-
-                    builderSingle.setAdapter(taskTypeSelectionAdapter, (dialog, position) -> {
-                        textTaskType.setText(taskTypeSelectionAdapter.getItem(position));
-                    });
-                    builderSingle.show();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-
-        // User Selection
-        RxView.touches(textAssignedUser).subscribe(motionEvent -> {
-            try {
-                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(requireContext());
-                    builderSingle.setTitle("Assign To");
-
-                    final ArrayAdapter<String> userSelectionAdapter = new ArrayAdapter<String>(requireContext(),
-                            android.R.layout.select_dialog_singlechoice, userNameList) {
-                        @NonNull
-                        @Override
-                        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                            View view = super.getView(position, convertView, parent);
-                            TextView text = view.findViewById(android.R.id.text1);
-                            text.setTextColor(Color.BLACK);
-                            return view;
+                        User user = Utils.getLoginUserDetails(requireContext());
+                        if (user != null) {
+                            taskMaster.setTaskCreatedBy(user.getEmailId());
                         }
-                    };
 
-                    builderSingle.setNegativeButton("Cancel", (dialog, position) -> dialog.dismiss());
+                        taskMaster.setTaskCreatedOn(Utils.getCurrentTimeStampWithSeconds());
 
-                    builderSingle.setAdapter(userSelectionAdapter, (dialog, position) -> {
-                        textAssignedUser.setText(userSelectionAdapter.getItem(position));
-                    });
-                    builderSingle.show();
+                        List<TasksSubDetails> tasksSubDetailsList = new ArrayList<>();
+
+                        TasksSubDetails tasksSubDetails = new TasksSubDetails();
+
+                        if (textTaskType.getText().toString().trim().equalsIgnoreCase(AppConstants.BUG_TYPE)) {
+                            tasksSubDetails.setTaskStatus(AppConstants.TODO_STATUS);
+                        } else {
+                            tasksSubDetails.setTaskStatus(AppConstants.TODO_STATUS);
+                        }
+
+                        tasksSubDetails.setTaskId(taskMasterId);
+
+                        tasksSubDetails.setTaskUserAssigned(textAssignedUser.getText().toString().trim());
+
+
+                        User userSelected = userDetailsMap.get(textAssignedUser.getText().toString().trim());
+
+                        if (userSelected != null) {
+                            String userId = userSelected.getMobileNumber();
+                            tasksSubDetails.setTaskUserId(userId);
+                            tasksSubDetails.setTaskUserGender(userSelected.getGender());
+                        }
+
+                        if (user != null) {
+                            tasksSubDetails.setModifiedBy(user.getEmailId());
+                        }
+
+                        tasksSubDetails.setModifiedOn(Utils.getCurrentTimeStampWithSeconds());
+
+                        tasksSubDetailsList.add(tasksSubDetails);
+                        taskMaster.setTasksSubDetailsList(tasksSubDetailsList);
+
+                        showProgressDialog("Processing your request.");
+
+                        createNewTask(taskMaster);
+                    }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+            });
+
+            // Task type Selection
+            RxView.touches(textTaskType).subscribe(motionEvent -> {
+                try {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                        AlertDialog.Builder builderSingle = new AlertDialog.Builder(requireContext());
+                        builderSingle.setTitle("Select Task Type");
+
+                        final ArrayAdapter<String> taskTypeSelectionAdapter = new ArrayAdapter<String>(requireContext(),
+                                android.R.layout.select_dialog_singlechoice, taskTypeList) {
+                            @NonNull
+                            @Override
+                            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                View view = super.getView(position, convertView, parent);
+                                TextView text = view.findViewById(android.R.id.text1);
+                                text.setTextColor(Color.BLACK);
+                                return view;
+                            }
+                        };
+
+                        builderSingle.setNegativeButton("Cancel", (dialog, position) -> dialog.dismiss());
+
+                        builderSingle.setAdapter(taskTypeSelectionAdapter, (dialog, position) -> {
+                            textTaskType.setText(taskTypeSelectionAdapter.getItem(position));
+                        });
+                        builderSingle.show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            // User Selection
+            RxView.touches(textAssignedUser).subscribe(motionEvent -> {
+                try {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                        AlertDialog.Builder builderSingle = new AlertDialog.Builder(requireContext());
+                        builderSingle.setTitle("Assign To");
+
+                        final ArrayAdapter<String> userSelectionAdapter = new ArrayAdapter<String>(requireContext(),
+                                android.R.layout.select_dialog_singlechoice, userNameList) {
+                            @NonNull
+                            @Override
+                            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                View view = super.getView(position, convertView, parent);
+                                TextView text = view.findViewById(android.R.id.text1);
+                                text.setTextColor(Color.BLACK);
+                                return view;
+                            }
+                        };
+
+                        builderSingle.setNegativeButton("Cancel", (dialog, position) -> dialog.dismiss());
+
+                        builderSingle.setAdapter(userSelectionAdapter, (dialog, position) -> {
+                            textAssignedUser.setText(userSelectionAdapter.getItem(position));
+                        });
+                        builderSingle.show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean validateFields() {
-        if (textTaskType.getText().toString().trim().isEmpty()) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please select task type.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (Utils.isEmptyField(editTaskHeader.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter task header.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (Utils.isEmptyField(editTaskDescription.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter task description.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (textAssignedUser.getText().toString().trim().isEmpty()) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please select user.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+        try {
+            if (textTaskType.getText().toString().trim().isEmpty()) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Please select task type.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            } else if (Utils.isEmptyField(editTaskHeader.getText().toString().trim())) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter task header.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            } else if (Utils.isEmptyField(editTaskDescription.getText().toString().trim())) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter task description.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            } else if (textAssignedUser.getText().toString().trim().isEmpty()) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Please select user.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            }else{
+                return true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
-        return true;
     }
 
     public void createNewTask(TaskMaster taskMaster) {
         try {
-
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.TASK_LIST_TABLE);
 
             databaseReference.child(taskMaster.getTaskMasterId()).setValue(taskMaster)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            // Write was successful!
-                            // ...
                             hideProgressDialog();
                             MyTasksToast.showSuccessToastWithBottom(requireContext(), taskMaster.getTaskType() + " created successfully", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
                             navigateToDashboard();
@@ -271,8 +280,6 @@ public class CreateTasks extends Fragment {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            // Write failed
-                            // ...
                             hideProgressDialog();
                             MyTasksToast.showErrorToastWithBottom(requireContext(), "Failed to create " + taskMaster.getTaskType() + ", Try again.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
                         }
@@ -286,7 +293,6 @@ public class CreateTasks extends Fragment {
 
     public void loadAllUsers() {
         try {
-
             showProgressDialog("Loading users details, please wait.");
 
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
@@ -331,22 +337,34 @@ public class CreateTasks extends Fragment {
     }
 
     private void loadSetUpViews(boolean isUsersAvailable) {
-        hideProgressDialog();
-        if (isUsersAvailable) {
-            setUpViews();
-        } else {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Failed to load users list.", MyTasksToast.MYTASKS_TOAST_LENGTH_LONG);
-            navigateToDashboard();
+        try {
+            hideProgressDialog();
+            if (isUsersAvailable) {
+                setUpViews();
+            } else {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Failed load user details or create users.", MyTasksToast.MYTASKS_TOAST_LENGTH_LONG);
+                navigateToDashboard();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }
 
     private void loadTaskTypes() {
-        taskTypeList = DataUtils.getTaskTypeList();
+        try {
+            taskTypeList = DataUtils.getTaskTypeList();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void navigateToDashboard() {
-        requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_main, new AdminDashboard()).commit();
+        try {
+            requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout_main, new AdminDashboard()).commit();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -10,6 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
        android:paddingBottom="@dimen/std_4_dp"
+        android:layout_marginTop="@dimen/std_10_dp"
+        android:layout_marginBottom="@dimen/std_10_dp"
         android:orientation="vertical">
 
         <com.github.mikephil.charting.charts.PieChart
@@ -32,6 +34,17 @@
             android:layout_weight="1"/>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/no_task_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No task or bugs assigned to you"
+        android:textStyle="bold"
+        android:textSize="@dimen/std_18_sp"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/colorPrimary"/>
 
     <com.task.agilecoach.views.main.MyVectorClock
         android:id="@+id/clock"

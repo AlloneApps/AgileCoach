@@ -11,11 +11,15 @@ import com.turki.vectoranalogclockview.VectorAnalogClock;
 public class MyVectorClock extends VectorAnalogClock {
 
     private void init(){
-        //use this for the default Analog Clock (recommended)
-        initializeSimple();
+        try {
+            //use this for the default Analog Clock (recommended)
+            initializeSimple();
 
-        //or use this if you want to use your own vector assets (not recommended)
-        //initializeCustom(faceResourceId, hourResourceId, minuteResourceId, secondResourceId);
+            //or use this if you want to use your own vector assets (not recommended)
+            //initializeCustom(faceResourceId, hourResourceId, minuteResourceId, secondResourceId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     //mandatory constructor

@@ -73,78 +73,93 @@ public class UpdateMPin extends Fragment {
     @Override
     public void onActivityCreated(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        try {
+            ((MainActivity) requireActivity()).setTitle("Update mPin");
 
-        ((MainActivity) requireActivity()).setTitle("Update mPin");
+            progressDialog = new ProgressDialog(requireContext());
 
-        progressDialog = new ProgressDialog(requireContext());
+            firebaseDatabase = FirebaseDatabase.getInstance();
+            mUserReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        mUserReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
-
-        setUpViews();
+            setUpViews();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void setUpViews() {
-        imageUser = rootView.findViewById(R.id.image_user);
+        try {
+            imageUser = rootView.findViewById(R.id.image_user);
 
-        editOldMPin = rootView.findViewById(R.id.edit_old_mPin);
-        editNewMPin = rootView.findViewById(R.id.edit_new_mPin);
+            editOldMPin = rootView.findViewById(R.id.edit_old_mPin);
+            editNewMPin = rootView.findViewById(R.id.edit_new_mPin);
 
-        textPersonName = rootView.findViewById(R.id.text_personal_name);
-        textMobileNumber = rootView.findViewById(R.id.text_mobile_number_value);
+            textPersonName = rootView.findViewById(R.id.text_personal_name);
+            textMobileNumber = rootView.findViewById(R.id.text_mobile_number_value);
 
-        btnUpdate = rootView.findViewById(R.id.btn_update);
+            btnUpdate = rootView.findViewById(R.id.btn_update);
 
-        editOldMPin.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
-        editNewMPin.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
+            editOldMPin.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
+            editNewMPin.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
 
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (validateFields()) {
-                    User loginUser = Utils.getLoginUserDetails(requireContext());
-                    Log.d(TAG, "onClick: loginUser:" + loginUser);
-                    if (loginUser.getmPin().equals(editOldMPin.getText().toString().trim())) {
-                        loginUser.setmPin(editNewMPin.getText().toString().trim());
-                        showProgressDialog("Processing please wait.");
+            btnUpdate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (validateFields()) {
+                        User loginUser = Utils.getLoginUserDetails(requireContext());
                         Log.d(TAG, "onClick: loginUser:" + loginUser);
-                        updateUserDetails(loginUser);
-                    } else {
-                        MyTasksToast.showErrorToastWithBottom(requireContext(), "Please verify old mPin.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                        if (loginUser.getmPin().equals(editOldMPin.getText().toString().trim())) {
+                            loginUser.setmPin(editNewMPin.getText().toString().trim());
+                            showProgressDialog("Processing please wait.");
+                            Log.d(TAG, "onClick: loginUser:" + loginUser);
+                            updateUserDetails(loginUser);
+                        } else {
+                            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please verify old mPin.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        User loginUser = Utils.getLoginUserDetails(requireContext());
-        Log.d(TAG, "setUpViews: loginUser: " + loginUser);
-        updateUserDetailsToView(loginUser);
-
+            User loginUser = Utils.getLoginUserDetails(requireContext());
+            Log.d(TAG, "setUpViews: loginUser: " + loginUser);
+            updateUserDetailsToView(loginUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void clearFields() {
-        editOldMPin.setText("");
-        editNewMPin.setText("");
+        try {
+            editOldMPin.setText("");
+            editNewMPin.setText("");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean validateFields() {
-        if (Utils.isEmptyField(editOldMPin.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter old mPin.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (editOldMPin.getText().toString().trim().length() < 4) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Old mPin must be 4 Digits.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (Utils.isEmptyField(editNewMPin.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter new mPin.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (editNewMPin.getText().toString().trim().length() < 4) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "New mPin must be 4 Digits.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-            return false;
-        } else if (editOldMPin.getText().toString().trim().equals(editNewMPin.getText().toString().trim())) {
-            MyTasksToast.showErrorToastWithBottom(requireContext(), "New mPin not same as Old mPin", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+        try {
+            if (Utils.isEmptyField(editOldMPin.getText().toString().trim())) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter old mPin.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            } else if (editOldMPin.getText().toString().trim().length() < 4) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Old mPin must be 4 Digits.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            } else if (Utils.isEmptyField(editNewMPin.getText().toString().trim())) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "Please enter new mPin.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            } else if (editNewMPin.getText().toString().trim().length() < 4) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "New mPin must be 4 Digits.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            } else if (editOldMPin.getText().toString().trim().equals(editNewMPin.getText().toString().trim())) {
+                MyTasksToast.showErrorToastWithBottom(requireContext(), "New mPin not same as Old mPin", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
-        return true;
     }
 
     public void updateUserDetails(User user) {
@@ -201,7 +216,6 @@ public class UpdateMPin extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void showProgressDialog(String message) {

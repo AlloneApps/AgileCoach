@@ -102,21 +102,25 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
     }
 
     private void setUpViews() {
-        recyclerLayout = rootView.findViewById(R.id.recycler_layout);
-        textNoTasks = rootView.findViewById(R.id.text_no_tasks);
-        taskRecyclerView = rootView.findViewById(R.id.recycler_my_tasks);
-        if (allTasksList.size() > 0) {
-            textNoTasks.setVisibility(View.GONE);
-            recyclerLayout.setVisibility(View.VISIBLE);
+        try {
+            recyclerLayout = rootView.findViewById(R.id.recycler_layout);
+            textNoTasks = rootView.findViewById(R.id.text_no_tasks);
+            taskRecyclerView = rootView.findViewById(R.id.recycler_my_tasks);
+            if (allTasksList.size() > 0) {
+                textNoTasks.setVisibility(View.GONE);
+                recyclerLayout.setVisibility(View.VISIBLE);
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
-            taskRecyclerView.setLayoutManager(linearLayoutManager);
-            allTasksAdapter = new AllTasksAdapter(requireContext(), allTasksList, this);
-            taskRecyclerView.setAdapter(allTasksAdapter);
-            allTasksAdapter.notifyDataSetChanged();
-        } else {
-            recyclerLayout.setVisibility(View.GONE);
-            textNoTasks.setVisibility(View.VISIBLE);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
+                taskRecyclerView.setLayoutManager(linearLayoutManager);
+                allTasksAdapter = new AllTasksAdapter(requireContext(), allTasksList, this);
+                taskRecyclerView.setAdapter(allTasksAdapter);
+                allTasksAdapter.notifyDataSetChanged();
+            } else {
+                recyclerLayout.setVisibility(View.GONE);
+                textNoTasks.setVisibility(View.VISIBLE);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -160,12 +164,20 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
 
     @Override
     public void assignTask(int position, TaskMaster taskMaster) {
-        MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+        try {
+            MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void changeStatus(int position, TaskMaster taskMaster) {
-        showDialogForTaskStatusUpdateAdmin(requireContext(), position, taskMaster);
+        try {
+            showDialogForTaskStatusUpdateAdmin(requireContext(), position, taskMaster);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

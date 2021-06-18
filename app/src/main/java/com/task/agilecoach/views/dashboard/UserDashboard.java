@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -41,6 +42,8 @@ public class UserDashboard extends Fragment {
 
     private static final String TAG = "DashboardFragment";
     private View rootView;
+    private TextView notTaskOrBugs;
+    MyVectorClock vectorAnalogClock;
 
     List<TaskMaster> myTasksList = new ArrayList<>();
 
@@ -60,7 +63,6 @@ public class UserDashboard extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
     }
 
     @Override
@@ -74,14 +76,13 @@ public class UserDashboard extends Fragment {
     @Override
     public void onActivityCreated(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         try {
             ((MainActivity) requireActivity()).setTitle("Dashboard");
 
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.HOUR, 0);
 
-            MyVectorClock vectorAnalogClock = rootView.findViewById(R.id.clock);
+            vectorAnalogClock = rootView.findViewById(R.id.clock);
 
             //customization
             vectorAnalogClock.setCalendar(calendar)
@@ -98,6 +99,8 @@ public class UserDashboard extends Fragment {
 
     private void setUpView() {
         try {
+            notTaskOrBugs = rootView.findViewById(R.id.no_task_details);
+
             pieChartTasksOrBugs = rootView.findViewById(R.id.pie_chart_tasks_or_bugs);
             pieChartTasksStatus = rootView.findViewById(R.id.pie_chart_tasks_bug_status);
 
@@ -124,30 +127,62 @@ public class UserDashboard extends Fragment {
                         TaskMaster taskMaster = postSnapshot.getValue(TaskMaster.class);
                         if (taskMaster != null) {
                             int lastPosition = taskMaster.getTasksSubDetailsList().size() - 1;
-                            Log.d(TAG, "getAssignedTasks lastPosition: " + lastPosition);
-                            Log.d(TAG, "getAssignedTasks login user number: " + loginUser.getMobileNumber());
-                            Log.d(TAG, "getAssignedTasks task last assign: " + taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserId());
                             if (taskMaster.getTasksSubDetailsList().get(lastPosition).getTaskUserId().equals(loginUser.getMobileNumber())) {
                                 myTasksList.add(taskMaster);
-                                Log.d(TAG, "getAssignedTasks: filteredTask: " + taskMaster);
                             }
                         }
                     }
-                    Log.d(TAG, "onDataChange: taskMasterList:" + myTasksList);
-                    generatePieChartForTasksOrBugs(myTasksList);
-                    generatePieChartForTasksStatus(myTasksList);
+
+                    if(myTasksList.size() > 0){
+                        notTaskOrBugs.setVisibility(View.GONE);
+                        vectorAnalogClock.setVisibility(View.GONE);
+                        pieChartTasksOrBugs.setVisibility(View.VISIBLE);
+                        pieChartTasksStatus.setVisibility(View.VISIBLE);
+                        Log.d(TAG, "onDataChange: taskMasterList:" + myTasksList);
+                        generatePieChartForTasksOrBugs(myTasksList);
+                        generatePieChartForTasksStatus(myTasksList);
+                    }else{
+                        pieChartTasksOrBugs.setVisibility(View.GONE);
+                        pieChartTasksStatus.setVisibility(View.GONE);
+                        notTaskOrBugs.setVisibility(View.VISIBLE);
+                        vectorAnalogClock.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    generatePieChartForTasksOrBugs(myTasksList);
-                    generatePieChartForTasksStatus(myTasksList);
+                    if(myTasksList.size() > 0){
+                        notTaskOrBugs.setVisibility(View.GONE);
+                        vectorAnalogClock.setVisibility(View.GONE);
+                        pieChartTasksOrBugs.setVisibility(View.VISIBLE);
+                        pieChartTasksStatus.setVisibility(View.VISIBLE);
+                        Log.d(TAG, "onDataChange: taskMasterList:" + myTasksList);
+                        generatePieChartForTasksOrBugs(myTasksList);
+                        generatePieChartForTasksStatus(myTasksList);
+                    }else{
+                        pieChartTasksOrBugs.setVisibility(View.GONE);
+                        pieChartTasksStatus.setVisibility(View.GONE);
+                        notTaskOrBugs.setVisibility(View.VISIBLE);
+                        vectorAnalogClock.setVisibility(View.VISIBLE);
+                    }
                     Log.d(TAG, "onCancelled: failed to load user details");
                 }
             });
         } catch (Exception e) {
-            generatePieChartForTasksOrBugs(myTasksList);
-            generatePieChartForTasksStatus(myTasksList);
+            if(myTasksList.size() > 0){
+                notTaskOrBugs.setVisibility(View.GONE);
+                vectorAnalogClock.setVisibility(View.GONE);
+                pieChartTasksOrBugs.setVisibility(View.VISIBLE);
+                pieChartTasksStatus.setVisibility(View.VISIBLE);
+                Log.d(TAG, "onDataChange: taskMasterList:" + myTasksList);
+                generatePieChartForTasksOrBugs(myTasksList);
+                generatePieChartForTasksStatus(myTasksList);
+            }else{
+                pieChartTasksOrBugs.setVisibility(View.GONE);
+                pieChartTasksStatus.setVisibility(View.GONE);
+                notTaskOrBugs.setVisibility(View.VISIBLE);
+                vectorAnalogClock.setVisibility(View.VISIBLE);
+            }
             Log.d(TAG, "loadAllUsers: exception: " + e.getMessage());
             e.printStackTrace();
         }
@@ -155,11 +190,9 @@ public class UserDashboard extends Fragment {
 
     private void generatePieChartForTasksOrBugs(List<TaskMaster> myTasksList) {
         try {
-
             int totalTasks = 0;
             int tasks = 0;
             int bugs = 0;
-
 
             for (TaskMaster taskMaster : myTasksList) {
                 if (taskMaster.getTaskType().equalsIgnoreCase(AppConstants.BUG_TYPE)) {
@@ -171,15 +204,11 @@ public class UserDashboard extends Fragment {
                 }
             }
 
-            Log.d(TAG, "generatePieChartForTasksOrBugs: tasks: " + tasks);
-            Log.d(TAG, "generatePieChartForTasksOrBugs: totalTasks: " + totalTasks);
-
             ArrayList<PieEntry> entries = new ArrayList<>();
 
 
             entries.add(new PieEntry(tasks, "Tasks  "));
             entries.add(new PieEntry(bugs, "Bugs  "));
-
 
             String totalUsersTitle = "Total Tasks or Bugs : " + totalTasks;
             PieDataSet dataSet = new PieDataSet(entries, totalUsersTitle);
@@ -257,7 +286,6 @@ public class UserDashboard extends Fragment {
             Log.d(TAG, "generatePieChartForTasks: inProgressTasks:" + inProgressTasks);
             Log.d(TAG, "generatePieChartForTasks: readyForTestTasks:" + readyForTestTasks);
             Log.d(TAG, "generatePieChartForTasks: doneTasks:" + doneTasks);
-
 
             ArrayList<PieEntry> entries = new ArrayList<>();
 
