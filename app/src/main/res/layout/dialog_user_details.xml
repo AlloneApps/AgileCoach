@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/user_profile_coordinator_layout"
+    android:layout_width="match_parent"
+    android:background="@color/colorWhite"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/user_profile_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="false"
+        android:scrollbarStyle="insideOverlay">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/std_20_dp"
+            android:paddingBottom="@dimen/relative_vertical_padding"
+            android:paddingEnd="@dimen/relative_horizontal_padding"
+            android:paddingLeft="@dimen/relative_horizontal_padding"
+            android:paddingRight="@dimen/relative_horizontal_padding"
+            android:paddingStart="@dimen/relative_horizontal_padding">
+
+            <RelativeLayout
+                android:id="@+id/image_driver_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/image_user"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:contentDescription="User image"
+                        android:src="@drawable/ic_male_avatar"
+                        app:civ_border_color="@color/colorNewUxBlue"
+                        app:civ_border_width="1dp" />
+
+                    <TextView
+                        android:id="@+id/text_user_name"
+                        style="@style/AppTheme.Input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:textSize="@dimen/std_16_sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorBlack"
+                        android:layout_marginStart="@dimen/medium_margin"
+                        android:layout_marginTop="@dimen/large_margin"
+                        android:layout_marginEnd="@dimen/medium_margin"
+                        android:hint="User Name"
+                        android:textCursorDrawable="@null" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/text_user_info"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:layout_below="@+id/image_driver_layout"
+                android:layout_marginTop="@dimen/extra_large_margin"
+                android:text="Personal Info" />
+
+            <TextView
+                android:id="@+id/text_mobile_number_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_user_info"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="Mobile Number"
+                android:textSize="@dimen/std_14_sp"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_mobile_number"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_mobile_number_header"
+                android:textColor="@color/colorBlack"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:hint="Mobile number"
+                android:textCursorDrawable="@null" />
+
+            <TextView
+                android:id="@+id/text_email_id_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_mobile_number"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:textSize="@dimen/std_14_sp"
+                android:text="Email Id"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_email_id"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_email_id_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:hint="Email id"
+                android:textColor="@color/colorBlack"
+                android:textCursorDrawable="@null" />
+
+            <TextView
+                android:id="@+id/text_dob_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_email_id"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:text="Date Of Birth"
+                android:textSize="@dimen/std_14_sp"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_dob"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_dob_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:hint="Date of birth"
+                android:textColor="@color/colorBlack"
+                android:textCursorDrawable="@null" />
+
+            <TextView
+                android:id="@+id/text_gender_header"
+                style="@style/AppTheme.Header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_dob"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:textSize="@dimen/std_14_sp"
+                android:text="Gender"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_gender"
+                style="@style/AppTheme.Input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_gender_header"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
+                android:hint="Gender"
+                android:nextFocusDown="@+id/btn_update"
+                android:textColor="@color/colorBlack"
+                android:textCursorDrawable="@null" />
+
+            <Button
+                android:id="@+id/btn_back"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_gender"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/button_all_radius_rounded_deep_corner"
+                android:gravity="center"
+                android:text="Back"
+                android:textAllCaps="true"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/std_18_sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

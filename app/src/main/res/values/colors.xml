@@ -20,8 +20,10 @@
     <color name="colorDarkGrey">#96f9f9f9</color>
     <color name="colorDarkGrey1">#A9A9A9</color>
     <color name="colorError">#EF5350</color>
+    <color name="error_color">#EF5350</color>
     <color name="colorErrorDark">#C64C4A</color>
     <color name="colorSuccess">#4CAF50</color>
+    <color name="success_color">#4CAF50</color>
     <color name="colorAccepted">#ce1440f4</color>
 
     <color name="colorBlue">#33b5f1</color>

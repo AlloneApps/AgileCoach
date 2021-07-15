@@ -7,12 +7,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,10 +32,11 @@ import com.task.agilecoach.helpers.FireBaseDatabaseConstants;
 import com.task.agilecoach.helpers.myTaskToast.MyTasksToast;
 import com.task.agilecoach.model.User;
 import com.task.agilecoach.views.main.MainActivity;
-import com.task.agilecoach.views.myTasks.MyTasks;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AllUsers extends Fragment implements AllUsersAdapter.AllUsersItemClickListener {
 
@@ -180,7 +183,8 @@ public class AllUsers extends Fragment implements AllUsersAdapter.AllUsersItemCl
     @Override
     public void userDetails(int position, User userDetails) {
         try {
-            MyTasksToast.showInfoToast(requireContext(),"Implementation pending",MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+//            MyTasksToast.showInfoToast(requireContext(), "Implementation pending", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+            showDialogUserDetails(userDetails);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -190,6 +194,59 @@ public class AllUsers extends Fragment implements AllUsersAdapter.AllUsersItemCl
     public void makeInActiveUser(int position, User userDetails) {
         try {
             showDialogActiveOrInActiveUserByAdmin(requireContext(), position, userDetails);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showDialogUserDetails(User user) {
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            LayoutInflater inflater = this.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_user_details, null);
+            builder.setView(dialogView);
+            builder.setCancelable(false);
+
+            // TextView and EditText Initialization
+            TextView textFullName = dialogView.findViewById(R.id.text_user_name);
+            TextView textMobileNumber = dialogView.findViewById(R.id.text_mobile_number);
+            TextView textEmailId = dialogView.findViewById(R.id.text_email_id);
+            TextView textDateOfBirth = dialogView.findViewById(R.id.text_dob);
+            TextView textGender = dialogView.findViewById(R.id.text_gender);
+
+            CircleImageView imageAvatar = dialogView.findViewById(R.id.image_user);
+
+            Button btnBack = dialogView.findViewById(R.id.btn_back);
+
+            if (user != null) {
+                String userFullName = user.getFirstName() + " " + user.getLastName();
+                textFullName.setText(userFullName);
+                textMobileNumber.setText(user.getMobileNumber());
+                textEmailId.setText(user.getEmailId());
+                textDateOfBirth.setText(user.getDateOfBirth());
+                textGender.setText(user.getGender());
+
+                if (user.getGender().equalsIgnoreCase(AppConstants.FEMALE_GENDER)) {
+                    imageAvatar.setImageDrawable(ResourcesCompat.getDrawable(requireContext().getResources(), R.drawable.ic_female_avatar, null));
+                } else {
+                    imageAvatar.setImageDrawable(ResourcesCompat.getDrawable(requireContext().getResources(), R.drawable.ic_male_avatar, null));
+                }
+            }
+
+            AlertDialog alert = builder.create();
+            alert.show();
+
+            btnBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        alert.dismiss();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
         } catch (Exception e) {
             e.printStackTrace();
         }

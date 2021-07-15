@@ -94,11 +94,11 @@ public class AllUsersAdapter extends RecyclerView.Adapter<AllUsersAdapter.AllTas
                 if (userActiveStatus.equals(AppConstants.ACTIVE_USER)) {
                     holder.textUserActiveStatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_active_user, 0, 0, 0);
                     holder.textUserActiveStatus.setCompoundDrawablePadding((int) context.getResources().getDimension(R.dimen.std_10_dp));
-                    holder.textUserActiveStatus.setTextColor(context.getResources().getColor(R.color.success_color, null));
+                    holder.textUserActiveStatus.setTextColor(context.getResources().getColor(R.color.colorSuccess, null));
                 } else {
                     holder.textUserActiveStatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_unactive_user, 0, 0, 0);
                     holder.textUserActiveStatus.setCompoundDrawablePadding((int) context.getResources().getDimension(R.dimen.std_10_dp));
-                    holder.textUserActiveStatus.setTextColor(context.getResources().getColor(R.color.error_color, null));
+                    holder.textUserActiveStatus.setTextColor(context.getResources().getColor(R.color.colorError, null));
                 }
 
                 holder.textUserDetails.setOnClickListener(new View.OnClickListener() {
