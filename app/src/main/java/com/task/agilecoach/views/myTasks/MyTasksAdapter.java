@@ -109,7 +109,7 @@ public class MyTasksAdapter extends RecyclerView.Adapter<MyTasksAdapter.PickUpRe
                 holder.textView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        listener.assignTask(position,taskMaster);
+                        listener.viewTasks(position,taskMaster);
                     }
                 });
 
@@ -141,7 +141,7 @@ public class MyTasksAdapter extends RecyclerView.Adapter<MyTasksAdapter.PickUpRe
     }
 
     public interface MyTasksItemClickListener {
-        void assignTask(int position, TaskMaster taskMaster);
+        void viewTasks(int position, TaskMaster taskMaster);
 
         void changeStatus(int position, TaskMaster taskMaster);
     }

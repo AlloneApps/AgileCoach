@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/no_interest_loan_update_coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/std_20_dp"
+    android:layout_marginBottom="@dimen/std_20_dp"
+    tools:context=".views.taskDetails.TaskDetails">
+
+    <ScrollView
+        android:id="@+id/no_interest_loan_update_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="false"
+        android:scrollbarStyle="insideOverlay">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/std_20_dp">
+
+            <androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/create_task_coordinator_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/std_10_dp"
+                android:layout_marginTop="@dimen/std_10_dp"
+                android:layout_marginEnd="@dimen/std_10_dp"
+                android:layout_marginBottom="@dimen/std_10_dp"
+                android:background="@color/colorWhite"
+                android:elevation="@dimen/std_6_dp"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/std_10_dp"
+                app:cardCornerRadius="@dimen/std_6_dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/std_10_dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/std_50_dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:id="@+id/task_no_type_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal"
+                                android:paddingEnd="@dimen/std_10_dp">
+
+                                <TextView
+                                    android:id="@+id/text_task_number"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.8"
+                                    android:drawableLeft="@drawable/ic_tasks_direction"
+                                    android:drawablePadding="@dimen/std_10_dp"
+                                    android:paddingStart="@dimen/std_10_dp"
+                                    android:textColor="@color/colorVeniceBlue"
+                                    android:textSize="@dimen/std_14_sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/text_task_status"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1.2"
+                                    android:gravity="end"
+                                    android:textColor="@color/colorVeniceBlue"
+                                    android:textSize="@dimen/std_14_sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/task_name_owner_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="@dimen/std_10_dp"
+                                android:layout_weight="1"
+                                android:orientation="horizontal"
+                                android:paddingEnd="@dimen/std_10_dp">
+
+                                <TextView
+                                    android:id="@+id/text_task_type"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:drawablePadding="@dimen/std_10_dp"
+                                    android:paddingStart="@dimen/std_10_dp"
+                                    android:textSize="@dimen/std_14_sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/text_assign_to"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:drawablePadding="@dimen/std_10_dp"
+                                    android:gravity="end"
+                                    android:paddingStart="@dimen/std_10_dp"
+                                    android:textSize="@dimen/std_14_sp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/text_task_header_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/std_10_dp"
+                        android:layout_weight="1"
+                        android:gravity="start|center"
+                        android:paddingStart="@dimen/std_10_dp"
+                        android:text="Task Header"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/std_16_sp" />
+
+                    <TextView
+                        android:id="@+id/text_task_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/std_10_dp"
+                        android:layout_weight="1"
+                        android:gravity="start|center"
+                        android:hint="Task Header"
+                        android:paddingStart="@dimen/std_10_dp"
+                        android:textSize="@dimen/std_16_sp" />
+
+                    <TextView
+                        android:id="@+id/text_task_desc_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/std_10_dp"
+                        android:layout_weight="1"
+                        android:gravity="start|center"
+                        android:textStyle="bold"
+                        android:paddingStart="@dimen/std_10_dp"
+                        android:text="Task Description"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="@dimen/std_16_sp" />
+
+                    <TextView
+                        android:id="@+id/text_task_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/std_10_dp"
+                        android:layout_weight="1"
+                        android:gravity="start|center"
+                        android:hint="Task Description"
+                        android:paddingStart="@dimen/std_10_dp"
+                        android:textSize="@dimen/std_16_sp" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_loan_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/create_task_coordinator_layout"
+                android:layout_marginTop="@dimen/std_10_dp"
+                android:layout_marginStart="@dimen/std_4_dp"
+                android:layout_marginEnd="@dimen/std_4_dp"/>
+
+            <Button
+                android:id="@+id/btn_back"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/recycler_loan_details"
+                android:layout_marginStart="80dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="80dp"
+                android:background="@drawable/button_all_radius_rounded_deep_corner"
+                android:gravity="center"
+                android:text="Back"
+                android:textAllCaps="true"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/std_18_sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -2,6 +2,7 @@ package com.task.agilecoach.views.allTasks;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,6 +40,7 @@ import com.task.agilecoach.model.TaskMaster;
 import com.task.agilecoach.model.TasksSubDetails;
 import com.task.agilecoach.model.User;
 import com.task.agilecoach.views.main.MainActivity;
+import com.task.agilecoach.views.taskDetails.TaskDetails;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -119,7 +121,7 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
                 recyclerLayout.setVisibility(View.GONE);
                 textNoTasks.setVisibility(View.VISIBLE);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -165,8 +167,10 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
     @Override
     public void assignTask(int position, TaskMaster taskMaster) {
         try {
-            MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
-        }catch (Exception e){
+            Intent intent = new Intent(requireContext(), TaskDetails.class);
+            intent.putExtra(TaskDetails.TASK_MASTER_DETAILS, taskMaster);
+            startActivityForResult(intent, 1);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -175,7 +179,7 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
     public void changeStatus(int position, TaskMaster taskMaster) {
         try {
             showDialogForTaskStatusUpdateAdmin(requireContext(), position, taskMaster);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -325,7 +329,7 @@ public class AllTasks extends Fragment implements AllTasksAdapter.AllTasksItemCl
 
                             taskMaster.getTasksSubDetailsList().add(tasksSubDetails);
 
-                            updateTaskOrBug(position, taskMaster,alert);
+                            updateTaskOrBug(position, taskMaster, alert);
                         } else {
                             MyTasksToast.showInfoToast(requireContext(), "Nothing to Update.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
                         }

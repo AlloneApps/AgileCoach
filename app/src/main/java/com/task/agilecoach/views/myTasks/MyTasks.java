@@ -2,6 +2,7 @@ package com.task.agilecoach.views.myTasks;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,6 +40,7 @@ import com.task.agilecoach.model.TaskMaster;
 import com.task.agilecoach.model.TasksSubDetails;
 import com.task.agilecoach.model.User;
 import com.task.agilecoach.views.main.MainActivity;
+import com.task.agilecoach.views.taskDetails.TaskDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -172,9 +174,11 @@ public class MyTasks extends Fragment implements MyTasksAdapter.MyTasksItemClick
     }
 
     @Override
-    public void assignTask(int position, TaskMaster taskMaster) {
+    public void viewTasks(int position, TaskMaster taskMaster) {
         try {
-            MyTasksToast.showInfoToast(requireContext(), "Implementation Pending.", MyTasksToast.MYTASKS_TOAST_LENGTH_SHORT);
+            Intent intent = new Intent(requireContext(), TaskDetails.class);
+            intent.putExtra(TaskDetails.TASK_MASTER_DETAILS, taskMaster);
+            startActivityForResult(intent, 1);
         }catch (Exception e){
             e.printStackTrace();
         }
