@@ -1,5 +1,6 @@
 package com.task.agilecoach.views.dashboard;
 
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +29,7 @@ import com.task.agilecoach.helpers.AppConstants;
 import com.task.agilecoach.helpers.FireBaseDatabaseConstants;
 import com.task.agilecoach.model.TaskMaster;
 import com.task.agilecoach.model.User;
+import com.task.agilecoach.views.login.LoginActivity;
 import com.task.agilecoach.views.main.MainActivity;
 import com.task.agilecoach.views.main.MyVectorClock;
 
@@ -47,6 +49,8 @@ public class AdminDashboard extends Fragment {
     private TextView textNoUsers, textNoTasksOrBugs;
 
     private PieChart pieChartUsers, pieChartTasks;
+
+    private ProgressDialog progressDialog;
 
     public AdminDashboard() {
         // Required empty public constructor
@@ -77,6 +81,8 @@ public class AdminDashboard extends Fragment {
 
         try {
             ((MainActivity) requireActivity()).setTitle("Dashboard");
+
+            progressDialog = new ProgressDialog(requireContext());
 
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.HOUR, 0);
@@ -149,10 +155,13 @@ public class AdminDashboard extends Fragment {
 
     public void loadAllUsersList() {
         try {
+            showProgressDialog("Dashboard details loading..");
+
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.USERS_TABLE);
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
+                    hideProgressDialog();
                     userList.clear();
                     for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                         User userMain = postSnapshot.getValue(User.class);
@@ -168,11 +177,13 @@ public class AdminDashboard extends Fragment {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
+                    hideProgressDialog();
                     generatePieChartForUserDetails(userList);
                     Log.d(TAG, "onCancelled: failed to load user details");
                 }
             });
         } catch (Exception e) {
+            hideProgressDialog();
             generatePieChartForUserDetails(userList);
             Log.d(TAG, "loadAllUsers: exception: " + e.getMessage());
             e.printStackTrace();
@@ -394,6 +405,29 @@ public class AdminDashboard extends Fragment {
             // entry label styling
             pieChartTasks.setEntryLabelColor(Color.WHITE);
             pieChartTasks.setEntryLabelTextSize(12f);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showProgressDialog(String message) {
+        try {
+            if (progressDialog != null) {
+                progressDialog.setMessage(message);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void hideProgressDialog() {
+        try {
+            if (progressDialog != null) {
+                progressDialog.dismiss();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

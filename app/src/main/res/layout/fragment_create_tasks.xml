@@ -109,11 +109,15 @@
                 android:layout_marginTop="@dimen/large_margin"
                 android:layout_marginEnd="@dimen/medium_margin"
                 android:background="@drawable/text_border"
+                android:gravity="start"
                 android:hint="Enter task description"
-                android:inputType="textLongMessage"
-                android:nextFocusDown="@+id/edit_state"
+                android:inputType="textCapSentences|textMultiLine"
+                android:lines="20"
+                android:minLines="5"
+                android:nextFocusDown="@+id/edit_last_name"
                 android:textColor="@color/colorBlack"
-                android:textColorHint="@color/colorDarkGrayBorder" />
+                android:textColorHint="@color/colorDarkGrayBorder"
+                android:textCursorDrawable="@null" />
 
             <TextView
                 android:id="@+id/text_task_estimation_header"
@@ -179,7 +183,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/text_assign_user"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="@dimen/extra_large_margin"
                 android:background="@drawable/button_all_radius_rounded_deep_corner"

@@ -1,5 +1,6 @@
 package com.task.agilecoach.views.dashboard;
 
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,7 @@ import com.task.agilecoach.helpers.FireBaseDatabaseConstants;
 import com.task.agilecoach.helpers.Utils;
 import com.task.agilecoach.model.TaskMaster;
 import com.task.agilecoach.model.User;
+import com.task.agilecoach.views.login.LoginActivity;
 import com.task.agilecoach.views.main.MainActivity;
 import com.task.agilecoach.views.main.MyVectorClock;
 
@@ -48,6 +50,8 @@ public class UserDashboard extends Fragment {
     List<TaskMaster> myTasksList = new ArrayList<>();
 
     private PieChart pieChartTasksOrBugs, pieChartTasksStatus;
+
+    private ProgressDialog progressDialog;
 
     public UserDashboard() {
         // Required empty public constructor
@@ -78,6 +82,8 @@ public class UserDashboard extends Fragment {
         super.onActivityCreated(savedInstanceState);
         try {
             ((MainActivity) requireActivity()).setTitle("Dashboard");
+
+            progressDialog = new ProgressDialog(requireContext());
 
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.HOUR, 0);
@@ -118,10 +124,14 @@ public class UserDashboard extends Fragment {
 
     public void loadAllTaskOrBugList(User loginUser) {
         try {
+
+            showProgressDialog("Dashboard details loading..");
+
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(FireBaseDatabaseConstants.TASK_LIST_TABLE);
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NotNull DataSnapshot snapshot) {
+                    hideProgressDialog();
                     myTasksList.clear();
                     for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                         TaskMaster taskMaster = postSnapshot.getValue(TaskMaster.class);
@@ -151,6 +161,7 @@ public class UserDashboard extends Fragment {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
+                    hideProgressDialog();
                     if(myTasksList.size() > 0){
                         notTaskOrBugs.setVisibility(View.GONE);
                         vectorAnalogClock.setVisibility(View.GONE);
@@ -169,6 +180,7 @@ public class UserDashboard extends Fragment {
                 }
             });
         } catch (Exception e) {
+            hideProgressDialog();
             if(myTasksList.size() > 0){
                 notTaskOrBugs.setVisibility(View.GONE);
                 vectorAnalogClock.setVisibility(View.GONE);
@@ -414,6 +426,29 @@ public class UserDashboard extends Fragment {
             // entry label styling
             pieChartTasksStatus.setEntryLabelColor(Color.WHITE);
             pieChartTasksStatus.setEntryLabelTextSize(12f);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showProgressDialog(String message) {
+        try {
+            if (progressDialog != null) {
+                progressDialog.setMessage(message);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void hideProgressDialog() {
+        try {
+            if (progressDialog != null) {
+                progressDialog.dismiss();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

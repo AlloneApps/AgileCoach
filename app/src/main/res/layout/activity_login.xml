@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/image_logo"
-            android:layout_width="323dp"
-            android:layout_height="120dp"
+            android:layout_width="360dp"
+            android:layout_height="@dimen/std_160_dp"
             android:layout_below="@+id/text_signup"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="8dp"
@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/std_40_dp"
             android:layout_marginStart="@dimen/std_20_dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="80dp"
             android:layout_marginEnd="@dimen/std_20_dp"
             android:background="@drawable/text_border"
             android:drawableEnd="@drawable/ic_mobile_two"
@@ -106,8 +106,8 @@
 
         <TextView
             android:id="@+id/text_signup"
-            android:layout_width="313dp"
-            android:layout_height="18dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/btn_login"
             android:layout_marginStart="8dp"
             android:layout_marginTop="20dp"
